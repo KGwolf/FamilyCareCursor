@@ -1,0 +1,45 @@
+<!--index.wxml-->
+<view class="page-container">
+  
+  <!-- 顶部导航栏 -->
+  <view class="header">
+    <view class="header-inner">
+      <text class="header-title">关爱家人小助手</text>
+    </view>
+  </view>
+
+  <!-- 主内容区域 -->
+  <view class="main">
+    
+    <!-- 装饰性图形区域 -->
+    <view class="hero-section">
+      <view class="hero-bg-gradient"></view>
+      
+      <view class="hero-circle">
+        <view class="hero-shape-main"></view>
+        
+        <view class="hero-shape-yellow"></view>
+        <view class="hero-shape-blue"></view>
+      </view>
+    </view>
+
+    <!-- 欢迎文字区域 -->
+    <view class="welcome-section">
+      <text class="welcome-title">欢迎来到关爱家人小助手</text>
+      <view class="welcome-desc">
+        <text class="welcome-text">这里将陪伴您一起守护家人的每一天。</text>
+        <text class="welcome-text">您还没有添加护理对象，现在就开始记录并陪伴他们吧～</text>
+      </view>
+    </view>
+
+    <!-- 按钮区域 -->
+    <view class="button-section">
+      <button class="add-button" bindtap="onAddFamily">
+        <view class="button-icon"></view>
+        <text class="button-text">添加第一位家人</text>
+      </button>
+    </view>
+
+  </view>
+
+</view>
