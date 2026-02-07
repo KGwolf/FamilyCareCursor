@@ -59,16 +59,31 @@ Component({
   },
   lifetimes: {
     attached() {
-      const rect = wx.getMenuButtonBoundingClientRect()
-      const platform = (wx.getDeviceInfo() || wx.getSystemInfoSync()).platform
-      const isAndroid = platform === 'android'
-      const isDevtools = platform === 'devtools'
-      const { windowWidth, safeArea: { top = 0, bottom = 0 } = {} } = wx.getWindowInfo() || wx.getSystemInfoSync()
+      let rect = wx.getMenuButtonBoundingClientRect();
+      const { windowWidth, safeArea: { top = 0 } = {} } = wx.getWindowInfo() || wx.getSystemInfoSync();
+      const platform = (wx.getDeviceInfo() || wx.getSystemInfoSync()).platform;
+      const isAndroid = platform === 'android';
+
+      // 健壮性检查：如果 rect 获取失败，提供兜底方案
+      if (!rect || !rect.width || !rect.left || rect.width === 0) {
+        rect = {
+          width: 87,
+          height: 32,
+          left: windowWidth - 7 - 87,
+          right: windowWidth - 7,
+          top: top + 6,
+          bottom: top + 6 + 32
+        };
+      }
+      
+      // 强制为所有平台设置高度，确保组件占据空间
+      const safeAreaTop = `height: calc(var(--height) + ${top}px); padding-top: ${top}px;`;
+
       this.setData({
         ios: !isAndroid,
         innerPaddingRight: `padding-right: ${windowWidth - rect.left}px`,
         leftWidth: `width: ${windowWidth - rect.left}px`,
-        safeAreaTop: isDevtools || isAndroid ? `height: calc(var(--height) + ${top}px); padding-top: ${top}px` : ``
+        safeAreaTop: safeAreaTop
       })
     },
   },

@@ -1,3 +1,5 @@
+
+  <navigation-bar id="navigationBar" title="首页" color="black" background="#FFF"></navigation-bar>
 <!-- pages/home/home.wxml -->
 <view class="page-container">
   
@@ -50,6 +52,7 @@
           <view class="progress-fill" style="width: {{progressPercent}}%"></view>
         </view>
       </view>
+
     </view>
 
     <!-- Task Cards -->
@@ -91,4 +94,7 @@
     </view>
 
   </view>
+
+  <!-- 底部导航 -->
+  <tabbar activeTab="home" />
 </view>

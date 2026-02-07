@@ -1,6 +1,10 @@
 <!--index.wxml-->
+<page-meta>
+  <navigation-bar id="navigationBar" title="首页" color="black" background="#FFF"></navigation-bar>
+</page-meta>
 <view class="page-container">
-  
+  <!-- 顶部状态栏占位（适配小程序胶囊） -->
+
   <!-- 顶部导航栏 -->
   <view class="header">
     <view class="header-inner">

@@ -1,0 +1,101 @@
+<navigation-bar id="navigationBar" title="添加家人" color="black" background="#FFF"></navigation-bar>
+<!-- pages/addFamily/addFamily.wxml -->
+<view class="page-container">
+  <!-- Header -->
+  <!-- <view class="header">
+    <view class="header-bar"></view>
+    <text class="header-subtitle">让我们一起守护更多的家人，记录每一天的健康</text>
+  </view> -->
+
+  <!-- Main Content -->
+  <view class="main-content">
+    
+    <!-- 姓名输入 -->
+    <view class="form-group">
+      <view class="form-label">
+        <view class="label-indicator"></view>
+        <text class="label-text">姓名</text>
+      </view>
+      <input 
+        type="text" 
+        placeholder="请输入家人姓名" 
+        value="{{formData.name}}"
+        bindinput="onNameInput"
+        class="form-input"
+      />
+    </view>
+
+    <!-- 关系选择 -->
+    <view class="form-group">
+      <view class="form-label">
+        <view class="label-indicator"></view>
+        <text class="label-text">关系</text>
+      </view>
+      <view class="relation-grid">
+        <view 
+          wx:for="{{relations}}" 
+          wx:key="value"
+          class="relation-btn {{formData.relation === item.value ? 'relation-active' : ''}}"
+          bindtap="onRelationSelect"
+          data-value="{{item.value}}"
+        >
+          <text>{{item.label}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 年龄输入 -->
+    <view class="form-group">
+      <view class="form-label">
+        <view class="label-indicator"></view>
+        <text class="label-text">年龄</text>
+      </view>
+      <view class="age-input-wrapper">
+        <input 
+          type="number" 
+          placeholder="请输入年龄" 
+          value="{{formData.age}}"
+          bindinput="onAgeInput"
+          class="form-input age-input"
+        />
+        <text class="age-unit">岁</text>
+      </view>
+    </view>
+
+    <!-- 头像选择 -->
+    <view class="form-group">
+      <view class="form-label">
+        <view class="label-indicator"></view>
+        <text class="label-text">选择专属头像</text>
+      </view>
+      <scroll-view class="avatar-scroll" scroll-x="true" enhanced="true" show-scrollbar="false">
+        <view class="avatar-list">
+          <view 
+            wx:for="{{avatars}}" 
+            wx:key="id"
+            class="avatar-item {{formData.avatarId === item.id ? 'avatar-selected' : 'avatar-unselected'}}"
+            bindtap="onAvatarSelect"
+            data-id="{{item.id}}"
+          >
+            <image class="avatar-image" src="{{item.url}}" mode="aspectFill"></image>
+            <view class="avatar-check" wx:if="{{formData.avatarId === item.id}}">
+              <text class="check-icon">✓</text>
+            </view>
+          </view>
+          <!-- 添加自定义头像按钮 -->
+          <view class="avatar-add" bindtap="onChooseCustomAvatar">
+            <text class="add-icon">＋</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- Footer -->
+  <view class="footer">
+    <view class="submit-btn" bindtap="onSubmit">
+      <text>确认添加</text>
+    </view>
+    <text class="privacy-text">信息仅用于本地提醒，保护隐私安全</text>
+  </view>
+</view>

@@ -1,0 +1,256 @@
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/materialicons/v140/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 48rpx;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+}
+
+.filled {
+  font-variation-settings: 'FILL' 1;
+}
+
+.settings-page {
+  height: 100vh;
+  background-color: #f8f8f6;
+  color: #1b180d;
+}
+
+.content-wrapper {
+  padding: 30rpx 40rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 40rpx;
+}
+
+/* 用户信息卡片 */
+.profile-card {
+  background: #ffffff;
+  padding: 40rpx;
+  border-radius: 48rpx;
+  border: 1rpx solid #f1f1f1;
+  display: flex;
+  align-items: center;
+  gap: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.02);
+}
+
+.avatar-box {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+  background-color: rgba(236, 182, 19, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ecb613;
+  border: 2rpx solid rgba(236, 182, 19, 0.2);
+  flex-shrink: 0;
+}
+
+.avatar-box .material-icons {
+  font-size: 60rpx;
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.name-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.user-name {
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.role-tag {
+  font-size: 20rpx;
+  background-color: #ecb613;
+  color: #ffffff;
+  font-weight: bold;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+.user-phone {
+  font-size: 24rpx;
+  color: #9ca3af;
+  margin-top: 8rpx;
+  display: block;
+}
+
+.arrow-icon {
+  color: #d1d5db;
+  font-size: 40rpx;
+}
+
+/* 章节样式 */
+.section-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10rpx;
+}
+
+.section-title {
+  font-size: 24rpx;
+  font-weight: bold;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 4rpx;
+}
+
+.add-btn {
+  font-size: 24rpx;
+  font-weight: bold;
+  color: #ecb613;
+  background-color: rgba(236, 182, 19, 0.1);
+  padding: 12rpx 30rpx;
+  border-radius: 40rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.add-icon {
+  font-size: 28rpx;
+}
+
+/* 列表容器 */
+.list-container {
+  background: #ffffff;
+  border-radius: 32rpx;
+  border: 1rpx solid #f1f1f1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.list-item {
+  padding: 32rpx;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  border-bottom: 1rpx solid #f8f8f8;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.item-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  flex-shrink: 0;
+}
+
+.item-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.item-name {
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.item-relation {
+  font-size: 20rpx;
+  margin-left: 16rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+.item-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.item-text {
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.icon-orange {
+  color: #fb923c;
+}
+
+.icon-blue {
+  color: #60a5fa;
+}
+
+.text-red {
+  color: #f87171;
+}
+
+/* 其他辅助样式 */
+.active-scale {
+  transform: scale(0.98);
+  transition: transform 0.2s;
+}
+
+.item-active {
+  background-color: #fafafa;
+}
+
+.margin-top-lg {
+  margin-top: 20rpx;
+}
+
+.footer {
+  padding: 60rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+  opacity: 0.5;
+}
+
+.footer-icon {
+  color: #ecb613;
+  font-size: 48rpx;
+}
+
+.footer-motto {
+  font-size: 20rpx;
+  font-style: italic;
+}
+
+.footer-version {
+  font-size: 18rpx;
+}
+
+/* 底部导航占位 */
+.tab-bar-placeholder {
+  height: 160rpx;
+  width: 100%;
+}

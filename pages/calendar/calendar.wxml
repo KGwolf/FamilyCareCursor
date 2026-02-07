@@ -1,0 +1,138 @@
+<!-- pages/calendar/calendar.wxml -->
+<view class="calendar-page {{darkMode ? 'dark' : ''}}">
+  <navigation-bar id="navigationBar" title="日程安排" color="black" background="#f6f7f8" back="{{true}}">
+    <view slot="left" class="nav-left">
+      <text class="material-icons">account_circle</text>
+    </view>
+    <view slot="right" class="nav-right">
+      <text class="material-icons">notifications</text>
+    </view>
+  </navigation-bar>
+
+  <scroll-view scroll-y class="main-scroll" enhanced show-scrollbar="{{false}}">
+    <!-- 家人切换栏 -->
+    <view class="family-header">
+      <view class="family-list">
+        <view 
+          wx:for="{{familyMembers}}" 
+          wx:key="id" 
+          class="family-item {{currentFamilyId === item.id ? 'active' : ''}}"
+          bindtap="switchFamily"
+          data-id="{{item.id}}"
+        >
+          <view class="avatar-ring">
+            <image class="avatar" src="{{item.avatar}}" mode="aspectFill"></image>
+          </view>
+          <text class="family-name">{{item.name}}</text>
+        </view>
+        <view class="family-item add-item" bindtap="addFamily">
+          <view class="add-btn">
+            <text class="material-icons">add</text>
+          </view>
+          <text class="family-name">添加</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 日历卡片 -->
+    <view class="calendar-card">
+      <view class="calendar-nav">
+        <view class="nav-btn" bindtap="prevMonth"><text class="material-icons">chevron_left</text></view>
+        <text class="current-month">{{currentYear}}年{{currentMonth}}月</text>
+        <view class="nav-btn" bindtap="nextMonth"><text class="material-icons">chevron_right</text></view>
+      </view>
+      
+      <view class="weekday-header">
+        <text wx:for="{{weekdays}}" wx:key="*this">{{item}}</text>
+      </view>
+      
+      <view class="days-grid">
+        <view 
+          wx:for="{{calendarDays}}" 
+          wx:key="index" 
+          class="day-cell {{item.currentMonth ? '' : 'other-month'}}"
+        >
+          <view 
+            class="day-content {{item.isToday ? 'today' : ''}} {{selectedDate === item.fullDate ? 'selected' : ''}}"
+            bindtap="selectDate"
+            data-date="{{item.fullDate}}"
+          >
+            <text>{{item.day}}</text>
+            <view wx:if="{{item.hasEvent}}" class="event-dot"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 今日任务 -->
+    <view class="tasks-section">
+      <view class="section-header">
+        <text class="section-title">今日任务</text>
+        <text class="section-date">{{todayDateStr}}</text>
+      </view>
+
+      <view class="task-list">
+        <view wx:for="{{tasks}}" wx:key="id" class="task-item">
+          <view class="task-time-box">
+            <text class="task-time">{{item.time}}</text>
+            <text class="task-label">{{item.label}}</text>
+          </view>
+          <view class="task-info">
+            <text class="task-title">{{item.title}}</text>
+            <text class="task-desc">{{item.desc}}</text>
+          </view>
+          <view 
+            class="task-check {{item.completed ? 'checked' : ''}}" 
+            bindtap="toggleTask" 
+            data-id="{{item.id}}"
+          >
+            <text class="material-icons" wx:if="{{item.completed}}">check</text>
+          </view>
+        </view>
+
+        <!-- 温馨提醒 -->
+        <view class="remind-card">
+          <view class="remind-info">
+            <text class="remind-title">温馨提醒</text>
+            <text class="remind-text">今天也要关心爸爸哦~</text>
+          </view>
+          <view class="remind-action" bindtap="goToGreet">
+            <text>去问候</text>
+            <text class="material-icons">arrow_forward</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部占位 -->
+    <view class="safe-bottom-placeholder"></view>
+  </scroll-view>
+
+  <!-- 底部导航 -->
+  <!-- <view class="tab-bar">
+    <view class="tab-item" bindtap="navTo" data-page="home">
+      <text class="material-icons">home</text>
+      <text class="tab-text">首页</text>
+    </view>
+    <view class="tab-item active">
+      <text class="material-icons fill">calendar_month</text>
+      <text class="tab-text">日历</text>
+    </view>
+    <view class="tab-add">
+      <view class="add-circle" bindtap="onAddClick">
+        <text class="material-icons">add</text>
+      </view>
+      <text class="tab-text active">记录</text>
+    </view>
+    <view class="tab-item">
+      <text class="material-icons">description</text>
+      <text class="tab-text">记录</text>
+    </view>
+    <view class="tab-item">
+      <text class="material-icons">settings</text>
+      <text class="tab-text">设置</text>
+    </view>
+  </view> -->
+   <!-- 底部导航 -->
+   <tabbar activeTab="calendar" />
+</view>

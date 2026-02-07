@@ -1,7 +1,13 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/home/home"
+    "pages/home/home",
+    "pages/calendar/calendar",
+    "pages/addReminder/addReminder",
+    "pages/addFamily/addFamily",
+    "pages/records/records",
+    "pages/addRecord/addRecord",
+    "pages/settings/settings"
   ],
   "window": {
     "navigationBarTextStyle": "black",
@@ -21,5 +27,8 @@
   },
   "componentFramework": "glass-easel",
   "sitemapLocation": "sitemap.json",
-  "lazyCodeLoading": "requiredComponents"
+  "lazyCodeLoading": "requiredComponents",
+  "usingComponents": {
+    "tabbar": "/components/tabbar/tabbar"
+  }
 }

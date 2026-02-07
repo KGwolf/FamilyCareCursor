@@ -1,0 +1,167 @@
+<navigation-bar title="健康记录" background="#fff" back="{{false}}"></navigation-bar>
+
+<scroll-view class="page-container" scroll-y enable-passive>
+  <!-- Family Member Selector -->
+  <view class="family-selector">
+    <view 
+      wx:for="{{familyMembers}}" 
+      wx:key="id" 
+      class="member-item {{item.active ? 'active' : ''}}" 
+      bindtap="onSwitchMember" 
+      data-id="{{item.id}}"
+    >
+      <view class="avatar-wrapper {{item.active ? 'border-primary' : ''}}">
+        <image class="avatar" src="{{item.avatar}}" mode="aspectFill"></image>
+      </view>
+      <text class="member-name {{item.active ? 'text-primary' : ''}}">{{item.name}}</text>
+    </view>
+    <view class="add-member-btn">
+      <text class="plus-icon">+</text>
+    </view>
+  </view>
+
+  <!-- Weekly Completion Card -->
+  <!-- <view class="card completion-card {{activeTab === 'symptoms' ? 'symptom-card' : ''}}">
+    <view class="progress-circle">
+      <svg class="circle-svg" viewBox="0 0 40 40">
+        <circle cx="20" cy="20" r="17" fill="none" stroke="{{activeTab === 'symptoms' ? '#ffe4e6' : '#e0e7ff'}}" stroke-width="3"></circle>
+        <circle cx="20" cy="20" r="17" fill="none" stroke="{{activeTab === 'symptoms' ? '#f43f5e' : '#137fec'}}" stroke-width="3" stroke-dasharray="106" stroke-dashoffset="{{activeTab === 'symptoms' ? 26 : 10}}" stroke-linecap="round"></circle>
+      </svg>
+      <text class="progress-text {{activeTab === 'symptoms' ? 'text-rose' : ''}}">{{activeTab === 'symptoms' ? symptomCompletion : completionRate}}%</text>
+    </view>
+    <view class="completion-info">
+      <view class="completion-header">
+        <text class="completion-title">{{activeTab === 'symptoms' ? '症状记录率 (本周)' : '本周护理完成度'}}</text>
+        <view class="streak-tag {{activeTab === 'symptoms' ? 'tag-rose' : ''}}">
+          <text wx:if="{{activeTab === 'weight'}}">🔥 7天</text>
+          <text wx:else>良好</text>
+        </view>
+      </view>
+      <text class="completion-desc">{{activeTab === 'symptoms' ? '继续保持记录，以便生成精准的健康报告 📈' : '护理执行稳定，健康态势良好 ✨'}}</text>
+    </view>
+  </view> -->
+
+  <!-- Tabs -->
+  <view class="tabs-container">
+    <view 
+      class="tab-btn {{activeTab === 'weight' ? 'active' : ''}}" 
+      bindtap="onTabChange" 
+      data-tab="weight"
+    >体重趋势</view>
+    <view 
+      class="tab-btn {{activeTab === 'symptoms' ? 'active-rose' : ''}}" 
+      bindtap="onTabChange" 
+      data-tab="symptoms"
+    >症状分布</view>
+  </view>
+
+  <!-- Weight Chart Section -->
+  <view class="stats-section" wx:if="{{activeTab === 'weight'}}">
+    <!-- ... 原有体重内容保持不变 ... -->
+    <view class="chart-card">
+      <view class="chart-header">
+        <view>
+          <text class="stat-label">当前体重 (kg)</text>
+          <view class="stat-value-row">
+            <text class="stat-value">{{currentWeight}}</text>
+            <text class="stat-unit">kg</text>
+          </view>
+        </view>
+        <view class="trend-tag {{weightDiff < 0 ? 'down' : 'up'}}">
+          <text class="trend-icon">{{weightDiff < 0 ? '↓' : '↑'}}</text>
+          <text>较上周 {{weightDiff}}kg</text>
+        </view>
+      </view>
+      
+      <view class="chart-container">
+        <canvas id="weightChart" canvas-id="weightChart" type="2d" class="chart-canvas" bindtouchstart="onChartTouch"></canvas>
+        <view class="chart-labels">
+          <text wx:for="{{weightLabels}}" wx:key="*this" class="{{item === '今日' ? 'current' : ''}}">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- History List -->
+    <view class="history-section">
+      <view class="section-header">
+        <text class="section-title">历史记录</text>
+        <text class="more-btn" bindtap="onViewMore">查看更多</text>
+      </view>
+      
+      <view class="history-item" wx:for="{{history}}" wx:key="id">
+        <view class="history-icon">
+          <text class="icon-text">⚖️</text>
+        </view>
+        <view class="history-content">
+          <view class="history-value-row">
+            <text class="history-value">{{item.value}}</text>
+            <text class="status-tag">{{item.status}}</text>
+          </view>
+          <text class="history-time">{{item.time}} · {{item.note}}</text>
+        </view>
+        <text class="arrow">></text>
+      </view>
+
+      <!-- Weekly Summary Card -->
+      <view class="summary-card">
+        <view class="summary-icon">📊</view>
+        <view class="summary-content">
+          <text class="summary-title">本周趋势简报</text>
+          <text class="summary-text">{{trendSummary}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Symptoms Section -->
+  <view class="stats-section" wx:if="{{activeTab === 'symptoms'}}">
+    <view class="chart-card">
+      <view class="chart-header">
+        <text class="symptom-chart-title">本周症状频次</text>
+        <text class="stat-label">最近 7 天</text>
+      </view>
+      <view class="symptom-tag-cloud">
+        <view 
+          wx:for="{{symptomStats}}" 
+          wx:key="name" 
+          class="symptom-stat-tag tag-{{item.color}} {{item.count === 0 ? 'opacity-40' : ''}}"
+        >
+          <text class="symptom-tag-name">{{item.name}}</text>
+          <text class="symptom-tag-count" wx:if="{{item.count > 0}}">{{item.count}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Symptom History -->
+    <view class="history-section">
+      <view class="section-header">
+        <text class="section-title">历史症状记录</text>
+        <text class="more-btn text-rose">查看全部</text>
+      </view>
+
+      <view class="symptom-record-card" wx:for="{{symptomHistory}}" wx:key="id">
+        <view class="card-accent"></view>
+        <view class="record-header">
+          <text class="record-time">{{item.time}}</text>
+          <text class="severity-tag">{{item.severity}}</text>
+        </view>
+        <view class="record-tags">
+          <view class="record-tag-item" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="name">
+            <text class="tag-icon">{{tag.icon}}</text>
+            <text class="tag-label">{{tag.name}}</text>
+          </view>
+        </view>
+        <view class="record-note">
+          <text>“{{item.note}}”</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="bottom-spacer"></view>
+</scroll-view>
+
+<!-- Floating Action Button -->
+  <!-- 底部导航 -->
+  <tabbar activeTab="records" />
+

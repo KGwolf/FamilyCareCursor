@@ -46,17 +46,20 @@
 .patient-info {
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
 }
 
 .patient-name-row {
   display: flex;
   align-items: center;
   gap: 8rpx;
+  white-space: nowrap;
 }
 
 .patient-name {
   font-size: 28rpx;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .dropdown-arrow {
@@ -70,6 +73,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: -0.5rpx;
+  white-space: nowrap;
 }
 
 .notification-btn {

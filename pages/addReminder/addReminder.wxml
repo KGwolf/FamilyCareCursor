@@ -1,0 +1,93 @@
+<navigation-bar id="navigationBar" title="添加提醒" color="black" background="#FFF"></navigation-bar>
+<!-- pages/addReminder/addReminder.wxml -->
+<view class="page-container">
+  <!-- Main Content -->
+  <scroll-view class="main-content" scroll-y="true" enhanced="true" show-scrollbar="false">
+    
+    <!-- 当前对象卡片 -->
+    <view class="target-card">
+      <view class="target-info">
+        <image class="target-avatar" src="{{currentTarget.avatar || '/images/avatar-default.png'}}" mode="aspectFill"></image>
+        <view class="target-details">
+          <view class="target-name-row">
+            <text class="target-name">{{currentTarget.name}}</text>
+            <text class="target-badge">当前对象</text>
+          </view>
+          <text class="target-desc">正在为{{currentTarget.name}}设置提醒</text>
+        </view>
+      </view>
+      <view class="switch-btn" bindtap="onSwitchTarget">
+        <text class="switch-icon">🔄</text>
+        <text class="switch-text">切换</text>
+      </view>
+    </view>
+
+    <!-- 提示信息 -->
+    <view class="tip-banner">
+      <text>设置一个小提醒，让{{currentTarget.name}}更安心 💛</text>
+    </view>
+
+    <!-- 提醒类型 -->
+    <view class="form-section">
+      <text class="section-label">提醒类型</text>
+      <view class="type-selector" bindtap="onSelectType">
+        <text class="type-icon">{{reminderTypes[selectedTypeIndex].icon}}</text>
+        <text class="type-text">{{reminderTypes[selectedTypeIndex].name}}</text>
+        <text class="type-arrow">›</text>
+      </view>
+    </view>
+
+    <!-- 时间与周期 -->
+    <view class="form-section">
+      <text class="section-label">时间与周期</text>
+      <view class="time-grid">
+        <view class="time-card" bindtap="onSelectTime">
+          <text class="time-label">执行时间</text>
+          <view class="time-value">
+            <text class="time-icon">⏰</text>
+            <text class="time-text">{{selectedTime}}</text>
+          </view>
+        </view>
+        <view class="time-card" bindtap="onSelectFrequency">
+          <text class="time-label">重复频率</text>
+          <view class="freq-value">
+            <text class="freq-icon">📅</text>
+            <text class="freq-text">{{frequencyOptions[selectedFreqIndex].name}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="freq-buttons">
+        <view 
+          wx:for="{{frequencyOptions}}" 
+          wx:key="index"
+          class="freq-btn {{selectedFreqIndex === index ? 'freq-btn-active' : ''}}"
+          bindtap="onFreqSelect"
+          data-index="{{index}}"
+        >
+          <text>{{item.name}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 备注信息 -->
+    <view class="form-section">
+      <text class="section-label">备注信息 (可选)</text>
+      <textarea 
+        class="remark-input"
+        placeholder="例如：饭后半小时服用，配温开水..."
+        value="{{remark}}"
+        bindinput="onRemarkInput"
+        maxlength="200"
+      ></textarea>
+    </view>
+
+  </scroll-view>
+
+  <!-- Footer -->
+  <view class="footer">
+    <view class="submit-btn" bindtap="onSubmit">
+      <text class="submit-icon">✨</text>
+      <text class="submit-text">确认添加提醒</text>
+    </view>
+  </view>
+</view>

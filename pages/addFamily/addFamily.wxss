@@ -1,0 +1,261 @@
+/* pages/addFamily/addFamily.wxss */
+
+/* Page 根元素 */
+page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Page Container */
+.page-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #ffffff;
+  font-family: 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Header */
+.header {
+  padding: 96rpx 48rpx 48rpx;
+  text-align: center;
+}
+
+.header-bar {
+  width: 96rpx;
+  height: 12rpx;
+  background-color: #f3f4f6;
+  border-radius: 100rpx;
+  margin: 0 auto 48rpx;
+}
+
+.header-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.title-text {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #22c55e;
+}
+
+.title-icon {
+  font-size: 40rpx;
+}
+
+.header-subtitle {
+  display: block;
+  color: #6b7280;
+  font-size: 28rpx;
+  margin-top: 16rpx;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  padding: 32rpx 64rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 64rpx;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* Form Group */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.label-indicator {
+  width: 8rpx;
+  height: 32rpx;
+  background-color: #22c55e;
+  border-radius: 100rpx;
+}
+
+.label-text {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* Form Input */
+.form-input {
+  width: 100%;
+  height: 112rpx;
+  padding: 0 48rpx;
+  background-color: #f9fafb;
+  border-radius: 32rpx;
+  border: none;
+  font-size: 32rpx;
+  color: #111827;
+  box-sizing: border-box;
+}
+
+.form-input::placeholder {
+  color: #9ca3af;
+}
+
+/* Age Input */
+.age-input-wrapper {
+  position: relative;
+}
+
+.age-input {
+  padding-right: 96rpx;
+}
+
+.age-unit {
+  position: absolute;
+  right: 48rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  font-size: 32rpx;
+}
+
+/* Relation Grid */
+.relation-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24rpx;
+}
+
+.relation-btn {
+  padding: 20rpx 0;
+  background-color: #f9fafb;
+  border-radius: 24rpx;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #4b5563;
+  border: 2rpx solid #f3f4f6;
+  transition: all 0.2s ease;
+}
+
+.relation-active {
+  background-color: #22c55e;
+  color: #ffffff;
+  font-weight: 700;
+  border-color: #22c55e;
+  box-shadow: 0 8rpx 24rpx rgba(34, 197, 94, 0.25);
+}
+
+/* Avatar Scroll */
+.avatar-scroll {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.avatar-list {
+  display: inline-flex;
+  gap: 40rpx;
+  padding-bottom: 32rpx;
+}
+
+.avatar-item {
+  position: relative;
+  flex-shrink: 0;
+  width: 128rpx;
+  height: 128rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.avatar-selected {
+  box-shadow: 0 0 0 8rpx #22c55e, 0 0 0 16rpx rgba(34, 197, 94, 0.15);
+}
+
+.avatar-unselected {
+  filter: grayscale(100%);
+  opacity: 0.6;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+}
+
+.avatar-check {
+  position: absolute;
+  right: -8rpx;
+  bottom: -8rpx;
+  width: 40rpx;
+  height: 40rpx;
+  background-color: #22c55e;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.check-icon {
+  color: #ffffff;
+  font-size: 20rpx;
+  font-weight: 700;
+}
+
+.avatar-add {
+  flex-shrink: 0;
+  width: 128rpx;
+  height: 128rpx;
+  border-radius: 50%;
+  border: 4rpx dashed #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+}
+
+.add-icon {
+  color: #d1d5db;
+  font-size: 48rpx;
+}
+
+/* Footer */
+.footer {
+  padding: 64rpx;
+  background-color: #ffffff;
+  border-top: 2rpx solid #f9fafb;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 32rpx 0;
+  background-color: #22c55e;
+  border-radius: 32rpx;
+  text-align: center;
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #ffffff;
+  box-shadow: 0 16rpx 48rpx rgba(34, 197, 94, 0.3);
+  transition: all 0.2s ease;
+}
+
+.submit-btn:active {
+  transform: scale(0.98);
+  background-color: #16a34a;
+}
+
+.privacy-text {
+  display: block;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 24rpx;
+  margin-top: 32rpx;
+}
