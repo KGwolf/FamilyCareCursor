@@ -41,13 +41,15 @@
     <view class="form-section">
       <text class="section-label">时间与周期</text>
       <view class="time-grid">
-        <view class="time-card" bindtap="onSelectTime">
-          <text class="time-label">执行时间</text>
-          <view class="time-value">
-            <text class="time-icon">⏰</text>
-            <text class="time-text">{{selectedTime}}</text>
+        <picker mode="time" value="{{selectedTime}}" bindchange="onTimeChange" class="time-picker-wrapper">
+          <view class="time-card">
+            <text class="time-label">执行时间</text>
+            <view class="time-value">
+              <text class="time-icon">⏰</text>
+              <text class="time-text">{{selectedTime}}</text>
+            </view>
           </view>
-        </view>
+        </picker>
         <view class="time-card" bindtap="onSelectFrequency">
           <text class="time-label">重复频率</text>
           <view class="freq-value">

@@ -22,7 +22,7 @@
     </view>
 
     <!-- 记录 (中心大按钮) -->
-    <view class="tab-item add-tab" bindtap="onTabChange" data-tab="add" data-url="/pages/addRecord/addRecord">
+    <view class="tab-item add-tab" bindtap="showAddModal">
       <view class="add-button-wrap">
         <view class="add-button">
           <svg class="icon-svg" style="width: 28px; height: 28px; fill: white;" viewBox="0 0 24 24">
@@ -51,6 +51,36 @@
         </svg>
       </view>
       <text class="label">设置</text>
+    </view>
+  </view>
+</view>
+
+<!-- Add Record Modal -->
+<view class="modal-overlay" wx:if="{{showAddModal}}" catchtap="hideAddModal">
+  <view class="modal-container" catchtap="noop">
+    <view class="modal-title">想要记录什么？</view>
+    <view class="modal-grid">
+      <view class="modal-button" bindtap="navigateToReminder">
+        <view class="modal-icon blue">
+          <text class="icon">🔔</text>
+        </view>
+        <view class="modal-label">加提醒</view>
+      </view>
+      <view class="modal-button" bindtap="navigateToWeight">
+        <view class="modal-icon green">
+          <text class="icon">⚖️</text>
+        </view>
+        <view class="modal-label">记体重</view>
+      </view>
+      <view class="modal-button" bindtap="navigateToSymptoms">
+        <view class="modal-icon orange">
+          <text class="icon">❤️</text>
+        </view>
+        <view class="modal-label">记症状</view>
+      </view>
+    </view>
+    <view class="modal-close" bindtap="hideAddModal">
+      <text class="close-icon">×</text>
     </view>
   </view>
 </view>

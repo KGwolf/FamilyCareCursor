@@ -88,8 +88,8 @@
       <view class="motivation-content">
         <text class="motivation-title">照顾好自己 ❤️</text>
         <text class="motivation-text">您是家人最强大的支柱，也请记得给自己留一点放松的时间 😊</text>
-        <view class="motivation-btn" bindtap="onViewTips">查看心情贴士</view>
       </view>
+      <view class="motivation-btn" bindtap="onViewTips">查看心情贴士</view>
       <view class="motivation-bg-circle"></view>
     </view>
 

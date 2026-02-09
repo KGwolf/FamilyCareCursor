@@ -1,4 +1,4 @@
-<navigation-bar title="健康记录" background="#fff" back="{{false}}"></navigation-bar>
+<navigation-bar title="健康档案" background="#fff" back="{{false}}"></navigation-bar>
 
 <scroll-view class="page-container" scroll-y enable-passive>
   <!-- Family Member Selector -->
@@ -44,15 +44,96 @@
   <!-- Tabs -->
   <view class="tabs-container">
     <view 
+      class="tab-btn {{activeTab === 'reminders' ? 'active' : ''}}" 
+      bindtap="onTabChange" 
+      data-tab="reminders"
+    >提醒</view>
+    <view 
       class="tab-btn {{activeTab === 'weight' ? 'active' : ''}}" 
       bindtap="onTabChange" 
       data-tab="weight"
-    >体重趋势</view>
+    >体重</view>
     <view 
       class="tab-btn {{activeTab === 'symptoms' ? 'active-rose' : ''}}" 
       bindtap="onTabChange" 
       data-tab="symptoms"
-    >症状分布</view>
+    >症状</view>
+  </view>
+
+  <!-- Reminders Section -->
+  <view class="stats-section" wx:if="{{activeTab === 'reminders'}}">
+    <!-- Weekly Overview -->
+    <view class="overview-card">
+      <view class="overview-info">
+        <text class="overview-label">WEEKLY OVERVIEW</text>
+        <text class="overview-title">完成度极佳</text>
+        <text class="overview-desc">共 {{reminderTotal}} 项任务</text>
+      </view>
+      <view class="progress-ring">
+        <svg class="ring-svg" viewBox="0 0 36 36">
+          <circle class="ring-bg" cx="18" cy="18" r="16"></circle>
+          <circle class="ring-progress" cx="18" cy="18" r="16" stroke-dasharray="100" stroke-dashoffset="{{100 - reminderCompletion}}"></circle>
+        </svg>
+        <text class="ring-text">{{reminderCompletion}}%</text>
+      </view>
+    </view>
+
+    <!-- Execution Trend -->
+    <view class="trend-card">
+      <view class="trend-header">
+        <view class="trend-title-row">
+          <text class="trend-icon-sm">📈</text>
+          <text class="trend-title">执行趋势</text>
+        </view>
+        <text class="trend-period">近7日</text>
+      </view>
+      <view class="trend-chart-container">
+        <svg class="trend-svg" viewBox="0 0 300 100" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#137fec" stop-opacity="0.1"/>
+              <stop offset="100%" stop-color="transparent" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path d="M0,80 Q75,85 150,40 T300,10" fill="none" stroke="#137fec" stroke-width="3" stroke-linecap="round"/>
+          <path d="M0,80 Q75,85 150,40 T300,10 V100 H0 Z" fill="url(#trendGradient)"/>
+        </svg>
+        <view class="trend-badge">9</view>
+      </view>
+      <view class="trend-labels">
+        <text>05.10</text>
+        <text>05.13</text>
+        <text class="current">今日</text>
+      </view>
+    </view>
+
+    <!-- Missed Tasks -->
+    <view class="missed-section">
+      <view class="missed-header">
+        <view>
+          <view class="missed-title-row">
+            <text class="missed-icon-sm">⚠️</text>
+            <text class="missed-title">近48小时待补项</text>
+          </view>
+          <text class="missed-subtitle">漏掉的任务可在此补齐</text>
+        </view>
+          <view class="retry-btn" bindtap="onRetryTask">去补录</view>
+      </view>
+
+      <view class="missed-item" wx:for="{{missedReminders}}" wx:key="id">
+        <view class="missed-item-icon">
+          <text>{{item.icon || '💊'}}</text>
+        </view>
+        <view class="missed-item-content">
+          <view class="missed-item-header">
+            <text class="missed-item-name">{{item.name}}</text>
+            <text class="missed-item-delay">超时 {{item.delay}}</text>
+          </view>
+          <text class="missed-item-time">计划时间: {{item.time}}</text>
+        </view>
+        <text class="more-icon">...</text>
+      </view>
+    </view>
   </view>
 
   <!-- Weight Chart Section -->

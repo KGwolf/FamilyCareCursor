@@ -1,52 +1,238 @@
+const { DataManager } = require('../../utils/data-manager');
+const app = getApp();
+
 Page({
   data: {
     statusBarHeight: 0,
-    familyMembers: [
-      { id: 1, name: '爸爸', avatar: 'https://i.pravatar.cc/100?u=3', active: true },
-      { id: 2, name: '妈妈', avatar: 'https://i.pravatar.cc/100?u=4', active: false }
-    ],
-    completionRate: 95,
-    activeTab: 'weight',
-    currentWeight: 62,
-    weightDiff: 4,
-    history: [
-      { id: 1, value: '62 kg', status: '平稳', time: '今天 08:30', note: '晨起空腹' },
-      { id: 2, value: '58 kg', status: '下降', time: '昨天 08:15', note: '晨起空腹' }
-    ],
-    trendSummary: '体重较上周平均下降 0.7kg，整体呈稳步下降趋势，处于健康范围。',
-    weightLabels: ['10.20', '10.21', '10.22', '10.23', '10.24', '10.25', '今日'],
+    familyMembers: [],
+    completionRate: 0,
+    activeTab: 'reminders',
+    currentWeight: 0,
+    weightDiff: 0,
+    history: [],
+    trendSummary: '',
+    weightLabels: [],
     selectedIndex: -1,
-    chartData: [40, 50, 60, 55, 65, 58, 62],
-    // 症状相关数据
-    symptomCompletion: 75,
-    symptomStats: [
-      { name: '疲劳', count: 5, color: 'rose' },
-      { name: '恶心', count: 3, color: 'orange' },
-      { name: '食欲差', count: 0, color: 'slate' }
-    ],
-    symptomHistory: [
-      {
-        id: 1,
-        time: '今天 10:15',
-        severity: '中度严重',
-        tags: [
-          { name: '疲劳', icon: '😫', color: 'rose' },
-          { name: '轻微恶心', icon: '🤢', color: 'orange' }
-        ],
-        note: '上午做完康复训练后感觉比较疲劳，喝了点温水后稍有缓解...'
-      }
-    ]
+    chartData: [],
+    symptomCompletion: 0,
+    symptomStats: [],
+    symptomHistory: [],
+    reminderCompletion: 92,
+    reminderTotal: 42,
+    missedReminders: []
   },
 
-  onLoad() {
+  onLoad(options) {
     const systemInfo = wx.getSystemInfoSync();
     this.setData({
       statusBarHeight: systemInfo.statusBarHeight
     });
+
+    if (options.tab) {
+      this.setData({
+        activeTab: options.tab
+      });
+    }
+
+    this.loadFamilyData();
   },
 
   onReady() {
-    this.drawWeightChart();
+    if (this.data.activeTab === 'weight') {
+      this.drawWeightChart();
+    }
+  },
+
+  onShow() {
+    this.loadFamilyData();
+  },
+
+  loadFamilyData() {
+    const familyMembers = app.globalData.familyMembers;
+    const currentFamilyId = app.globalData.currentFamilyId;
+    
+    if (familyMembers.length === 0) {
+      wx.reLaunch({
+        url: '/pages/index/index'
+      });
+      return;
+    }
+
+    const activeMembers = familyMembers.map(m => ({
+      ...m,
+      active: m.id === currentFamilyId
+    }));
+
+    this.setData({
+      familyMembers: activeMembers
+    });
+
+    this.loadData();
+  },
+
+  loadData() {
+    const { activeTab, familyMembers } = this.data;
+    const currentMember = familyMembers.find(m => m.active);
+    
+    if (!currentMember) return;
+
+    if (activeTab === 'weight') {
+      this.loadWeightData(currentMember.id);
+    } else if (activeTab === 'symptoms') {
+      this.loadSymptomData(currentMember.id);
+    } else if (activeTab === 'reminders') {
+      this.loadReminderData(currentMember.id);
+    }
+  },
+
+  loadReminderData(familyId) {
+    // 获取当前家庭成员的所有提醒
+    const reminders = DataManager.getRemindersByFamilyId(familyId);
+    const totalReminders = reminders.length;
+    
+    // 计算完成率
+    const completedReminders = reminders.filter(r => r.completed).length;
+    const completionRate = totalReminders > 0 ? Math.round((completedReminders / totalReminders) * 100) : 0;
+    
+    // 计算近48小时内的待补项
+    const now = new Date();
+    const fortyEightHoursAgo = new Date(now.getTime() - 48 * 60 * 60 * 1000);
+    
+    const missedReminders = reminders.filter(r => {
+      if (r.completed) return false;
+      
+      // 检查提醒是否在近48小时内
+      const reminderDate = new Date(r.date);
+      return reminderDate >= fortyEightHoursAgo;
+    }).map(r => {
+      // 计算超时时间
+      const reminderDate = new Date(r.date);
+      const delayMs = now.getTime() - reminderDate.getTime();
+      const delayHours = Math.round(delayMs / (1000 * 60 * 60));
+      
+      return {
+        id: r.id,
+        name: r.type.name,
+        time: `${r.date} ${r.time}`,
+        delay: `${delayHours}h`,
+        type: r.type.name,
+        icon: r.type.icon
+      };
+    });
+
+    this.setData({
+      reminderCompletion: completionRate,
+      reminderTotal: totalReminders,
+      missedReminders: missedReminders
+    });
+  },
+
+  loadWeightData(familyId) {
+    const weightRecords = DataManager.getWeightRecords(familyId, 7);
+    
+    if (weightRecords.length === 0) {
+      this.setData({
+        currentWeight: 0,
+        weightDiff: 0,
+        history: [],
+        chartData: [],
+        weightLabels: [],
+        trendSummary: '暂无体重记录'
+      });
+      return;
+    }
+
+    const latestRecord = weightRecords[weightRecords.length - 1];
+    const previousRecord = weightRecords.length > 1 ? weightRecords[weightRecords.length - 2] : null;
+    const weightDiff = previousRecord ? (latestRecord.weight - previousRecord.weight).toFixed(1) : 0;
+
+    const history = weightRecords.map(r => ({
+      id: r.id,
+      value: `${r.weight} kg`,
+      status: r.weightDiff > 0 ? '上升' : r.weightDiff < 0 ? '下降' : '平稳',
+      time: DataManager.formatDateTime(r.recordTime),
+      note: r.note || ''
+    }));
+
+    const chartData = weightRecords.map(r => r.weight);
+    const weightLabels = weightRecords.map(r => {
+      const date = new Date(r.recordTime);
+      return `${date.getMonth() + 1}.${date.getDate()}`;
+    });
+
+    const avgWeight = chartData.reduce((a, b) => a + b, 0) / chartData.length;
+    const trendSummary = `平均体重 ${avgWeight.toFixed(1)}kg，${weightDiff > 0 ? '较上次上升' : weightDiff < 0 ? '较上次下降' : '保持平稳'} ${Math.abs(weightDiff)}kg`;
+
+    this.setData({
+      currentWeight: latestRecord.weight,
+      weightDiff: weightDiff,
+      history,
+      chartData,
+      weightLabels,
+      trendSummary,
+      completionRate: Math.min(100, weightRecords.length * 15)
+    });
+  },
+
+  loadSymptomData(familyId) {
+    const symptomRecords = DataManager.getSymptomRecords(familyId, 10);
+    
+    if (symptomRecords.length === 0) {
+      this.setData({
+        symptomStats: [],
+        symptomHistory: [],
+        symptomCompletion: 0
+      });
+      return;
+    }
+
+    const symptomCounts = {};
+    symptomRecords.forEach(r => {
+      r.symptoms.forEach(s => {
+        symptomCounts[s.name] = (symptomCounts[s.name] || 0) + 1;
+      });
+    });
+
+    const symptomStats = Object.entries(symptomCounts).map(([name, count]) => {
+      const symptomDef = this.getSymptomDef(name);
+      return {
+        name,
+        count,
+        color: symptomDef ? symptomDef.color : 'slate'
+      };
+    });
+
+    const symptomHistory = symptomRecords.map(r => ({
+      id: r.id,
+      time: DataManager.formatDateTime(r.recordTime),
+      severity: r.severity || '轻度',
+      tags: r.symptoms.map(s => {
+        const symptomDef = this.getSymptomDef(s.name);
+        return {
+          name: s.name,
+          icon: symptomDef ? symptomDef.icon : '❓',
+          color: symptomDef ? symptomDef.color : 'slate'
+        };
+      }),
+      note: r.note || ''
+    }));
+
+    this.setData({
+      symptomStats,
+      symptomHistory,
+      symptomCompletion: Math.min(100, symptomRecords.length * 10)
+    });
+  },
+
+  getSymptomDef(name) {
+    const symptoms = [
+      { name: '疼痛', icon: '🤕', color: 'rose' },
+      { name: '恶心', icon: '🤢', color: 'orange' },
+      { name: '疲劳', icon: '😫', color: 'blue' },
+      { name: '发热', icon: '🤒', color: 'red' },
+      { name: '头晕', icon: '😵', color: 'purple' }
+    ];
+    return symptoms.find(s => s.name === name);
   },
 
   drawWeightChart(selectedIndex = -1) {
@@ -67,15 +253,16 @@ Page({
         ctx.scale(dpr, dpr);
 
         const weights = this.data.chartData;
+        if (weights.length === 0) return;
+
         const minW = Math.min(...weights) - 5;
         const maxW = Math.max(...weights) + 5;
-        const range = maxW - minW;
+        const range = maxW - minW || 1;
 
         const padding = { top: 20, bottom: 20, left: 35, right: 15 };
         const chartW = width - padding.left - padding.right;
         const chartH = height - padding.top - padding.bottom;
 
-        // 绘制 Y 轴坐标
         ctx.font = '10px sans-serif';
         ctx.fillStyle = '#94a3b8';
         ctx.textAlign = 'right';
@@ -86,7 +273,6 @@ Page({
           const y = padding.top + chartH - (i / ySteps) * chartH;
           ctx.fillText(val, padding.left - 8, y);
           
-          // 绘制水平网格线
           ctx.beginPath();
           ctx.setLineDash([2, 4]);
           ctx.moveTo(padding.left, y);
@@ -97,14 +283,13 @@ Page({
         }
 
         const points = weights.map((w, i) => ({
-          x: padding.left + (i / (weights.length - 1)) * chartW,
+          x: padding.left + (i / (weights.length - 1 || 1)) * chartW,
           y: padding.top + chartH - ((w - minW) / range) * chartH,
           val: w
         }));
 
         this.chartPoints = points;
 
-        // 绘制渐变填充区域
         ctx.beginPath();
         ctx.moveTo(points[0].x, points[0].y);
         for (let i = 0; i < points.length - 1; i++) {
@@ -120,7 +305,6 @@ Page({
         ctx.fillStyle = gradient;
         ctx.fill();
 
-        // 绘制曲线
         ctx.beginPath();
         ctx.moveTo(points[0].x, points[0].y);
         for (let i = 0; i < points.length - 1; i++) {
@@ -133,7 +317,6 @@ Page({
         ctx.lineCap = 'round';
         ctx.stroke();
 
-        // 绘制数据点
         points.forEach((p, i) => {
           ctx.beginPath();
           ctx.arc(p.x, p.y, i === selectedIndex ? 5 : 3, 0, Math.PI * 2);
@@ -143,7 +326,6 @@ Page({
           ctx.lineWidth = 2;
           ctx.stroke();
 
-          // 如果被选中，显示数值
           if (i === selectedIndex) {
             ctx.fillStyle = '#137fec';
             ctx.font = 'bold 12px sans-serif';
@@ -152,7 +334,6 @@ Page({
           }
         });
 
-        // 如果没有选中任何点，默认高亮最后一个点
         if (selectedIndex === -1) {
           const last = points[points.length - 1];
           ctx.beginPath();
@@ -170,7 +351,7 @@ Page({
     const y = touch.y;
 
     let closestIndex = -1;
-    let minDistance = 30; // 触摸判定距离
+    let minDistance = 30;
 
     this.chartPoints.forEach((p, i) => {
       const dist = Math.sqrt(Math.pow(p.x - x, 2) + Math.pow(p.y - y, 2));
@@ -204,10 +385,13 @@ Page({
       ...member,
       active: member.id === id
     }));
+    
     this.setData({ 
       familyMembers,
       selectedIndex: -1
     }, () => {
+      app.setCurrentFamily(id);
+      this.loadData();
       if (this.data.activeTab === 'weight') {
         this.drawWeightChart();
       }
@@ -220,6 +404,7 @@ Page({
       activeTab: tab,
       selectedIndex: -1
     }, () => {
+      this.loadData();
       if (tab === 'weight') {
         this.drawWeightChart();
       }
@@ -229,6 +414,12 @@ Page({
   onAddRecord() {
     wx.navigateTo({
       url: '/pages/addRecord/addRecord'
+    });
+  },
+
+  onRetryTask() {
+    wx.navigateTo({
+      url: '/pages/addReminder/addReminder'
     });
   }
 });

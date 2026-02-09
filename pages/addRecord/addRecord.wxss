@@ -7,6 +7,23 @@ page {
   flex-direction: column;
 }
 
+/* Ensure modal covers entire screen */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10rpx);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+
 .add-record-page {
   flex: 1;
   display: flex;
@@ -114,102 +131,69 @@ page {
 }
 
 .weight-card {
-  background: rgba(19, 236, 91, 0.05);
-  border: 1rpx solid rgba(19, 236, 91, 0.2);
-  border-radius: 64rpx;
-  padding: 80rpx 64rpx;
+  background: #ffffff;
+  border-radius: 48rpx;
+  padding: 64rpx 40rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
+  box-shadow: 0 8rpx 30rpx rgba(19, 236, 91, 0.08);
+  border: 2rpx solid rgba(19, 236, 91, 0.1);
 }
 
 .weight-subtitle {
-  font-size: 24rpx;
-  color: #059669;
-  font-weight: 500;
-  letter-spacing: 4rpx;
-  margin-bottom: 24rpx;
+  font-size: 26rpx;
+  color: #64748b;
+  font-weight: 600;
+  margin-bottom: 40rpx;
   text-transform: uppercase;
-  opacity: 0.8;
+  letter-spacing: 2rpx;
+}
+
+.weight-display-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .weight-value-row {
   display: flex;
   align-items: baseline;
+  justify-content: center;
   gap: 8rpx;
+  margin-bottom: 20rpx;
+  position: relative;
+  width: 100%;
 }
 
-.weight-value {
-  font-size: 110rpx;
-  font-weight: bold;
-  color: #0f172a;
-  letter-spacing: -2rpx;
+.weight-input {
+  font-size: 140rpx;
+  font-weight: 800;
+  color: #13ec5b;
+  text-align: center;
+  width: 300rpx;
+  height: 160rpx;
+  line-height: 160rpx;
+  border-bottom: 4rpx solid #13ec5b;
+  margin-bottom: 10rpx;
+}
+
+.weight-input::placeholder {
+  color: #e2e8f0;
 }
 
 .weight-unit {
   font-size: 40rpx;
-  font-weight: bold;
-  color: #13ec5b;
+  font-weight: 700;
+  color: #64748b;
+  margin-bottom: 20rpx;
 }
 
-.edit-btn {
-  position: absolute;
-  top: 40rpx;
-  right: 40rpx;
-  padding: 10rpx;
-}
-
-.icon-edit {
-  font-size: 36rpx;
-  color: rgba(19, 236, 91, 0.6);
-}
-
-.diff-tag {
-  margin-top: 40rpx;
-  padding: 16rpx 40rpx;
-  background-color: #ffffff;
-  border-radius: 100rpx;
-  border: 1rpx solid rgba(19, 236, 91, 0.1);
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
-}
-
-.diff-text {
+.weight-input-tip {
   font-size: 24rpx;
-  font-weight: 500;
-  color: #047857;
-}
-
-.diff-highlight {
-  font-weight: bold;
-  color: #13ec5b;
-}
-
-/* Notes Section */
-.notes-section {
-  display: flex;
-  flex-direction: column;
-  gap: 24rpx;
-}
-
-.notes-label {
-  padding-left: 8rpx;
-  font-size: 26rpx;
-  font-weight: bold;
   color: #94a3b8;
-  text-transform: uppercase;
-  letter-spacing: 2rpx;
-}
-
-.notes-input {
-  width: 100%;
-  height: 256rpx;
-  background-color: #ffffff;
-  border-radius: 40rpx;
-  padding: 32rpx;
-  font-size: 28rpx;
-  box-sizing: border-box;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.02);
+  margin-top: 10rpx;
 }
 
 /* Symptoms Section */
@@ -226,13 +210,13 @@ page {
 }
 
 .section-title {
-  font-size: 28rpx;
+  font-size: 32rpx;
   font-weight: bold;
-  color: #0f172a;
+  color: #1e293b;
 }
 
 .section-subtitle {
-  font-size: 20rpx;
+  font-size: 22rpx;
   font-weight: 500;
   color: #94a3b8;
 }
@@ -240,27 +224,35 @@ page {
 .symptom-grid {
   display: flex;
   flex-wrap: wrap;
-  margin: 0 -12rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.symptom-col {
+  width: 33.33%;
+  padding: 0 10rpx;
+  margin-bottom: 20rpx;
+  box-sizing: border-box;
 }
 
 .symptom-item {
-  width: calc(33.33% - 24rpx);
-  margin: 12rpx;
+  width: 100%;
   background: #ffffff;
   border: 4rpx solid transparent;
   border-radius: 40rpx;
-  padding: 32rpx 0;
+  padding: 28rpx 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16rpx;
-  transition: all 0.2s ease;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.02);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.03);
   box-sizing: border-box;
 }
 
 .symptom-item.selected {
-  background: rgba(19, 236, 91, 0.05);
+  background: #ffffff;
+  transform: translateY(-4rpx);
+  box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.06);
 }
 
 .symptom-item.selected.border-primary { border-color: #13ec5b; }
@@ -281,32 +273,59 @@ page {
   flex-shrink: 0;
 }
 
-.bg-primary { background-color: #f0fdf4; }
-.bg-orange { background-color: #fff7ed; }
-.bg-blue { background-color: #eff6ff; }
-.bg-red { background-color: #fef2f2; }
-.bg-purple { background-color: #faf5ff; }
-.bg-slate { background-color: #f8fafc; }
+.bg-primary { background-color: rgba(19, 236, 91, 0.08); }
+.bg-orange { background-color: rgba(251, 146, 60, 0.08); }
+.bg-blue { background-color: rgba(96, 165, 250, 0.08); }
+.bg-red { background-color: rgba(248, 113, 113, 0.08); }
+.bg-purple { background-color: rgba(192, 132, 252, 0.08); }
+.bg-slate { background-color: rgba(148, 163, 184, 0.08); }
 
-.symptom-icon-wrapper.selected.bg-primary { background-color: #ffffff; color: #13ec5b; box-shadow: 0 4rpx 12rpx rgba(19, 236, 91, 0.1); }
-/* Other colors handle similarly if needed, for now use white bg for all selected */
-.symptom-icon-wrapper.selected { background-color: #ffffff !important; }
+.symptom-icon-wrapper.selected {
+  transform: scale(1.1);
+}
 
 .symptom-icon {
   font-size: 48rpx;
 }
 
 .symptom-name {
-  font-size: 24rpx;
+  font-size: 26rpx;
   font-weight: 500;
   color: #64748b;
-  opacity: 0.7;
 }
 
 .symptom-name.selected {
-  color: #0f172a;
+  color: #1e293b;
   font-weight: bold;
-  opacity: 1;
+}
+
+/* Notes Section */
+.notes-section {
+  background: #ffffff;
+  border-radius: 40rpx;
+  padding: 40rpx;
+  margin-bottom: 100rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.notes-label {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #1e293b;
+}
+
+.notes-input {
+  width: 100%;
+  height: 240rpx;
+  font-size: 28rpx;
+  color: #334155;
+  background-color: #f8fafc;
+  padding: 32rpx;
+  border-radius: 24rpx;
+  box-sizing: border-box;
 }
 
 /* Footer */

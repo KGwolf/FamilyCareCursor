@@ -18,7 +18,7 @@ Component({
    * 组件的初始数据
    */
   data: {
-    // 内部状态可以放在这里
+    showAddModal: false
   },
 
   /**
@@ -29,14 +29,6 @@ Component({
       const { tab, url } = e.currentTarget.dataset;
       
       if (tab === this.properties.activeTab) return;
-
-      // 如果是中间的记录按钮，通常是跳转到添加页面
-      if (tab === 'add') {
-        wx.navigateTo({
-          url: url
-        });
-        return;
-      }
 
       // 其他标签使用 switchTab 或 reLaunch
       // 这里根据项目实际路由类型选择，通常底部导航使用 switchTab
@@ -51,6 +43,46 @@ Component({
       });
 
       this.triggerEvent('change', { tab });
+    },
+
+    // Modal functions
+    showAddModal() {
+      this.setData({
+        showAddModal: true
+      });
+    },
+
+    hideAddModal() {
+      this.setData({
+        showAddModal: false
+      });
+    },
+
+    // Navigation functions
+    navigateToReminder() {
+      this.hideAddModal();
+      wx.navigateTo({
+        url: '/pages/addReminder/addReminder'
+      });
+    },
+
+    navigateToWeight() {
+      this.hideAddModal();
+      wx.navigateTo({
+        url: '/pages/addRecord/addRecord?tab=weight'
+      });
+    },
+
+    navigateToSymptoms() {
+      this.hideAddModal();
+      wx.navigateTo({
+        url: '/pages/addRecord/addRecord?tab=symptoms'
+      });
+    },
+
+    // Empty function to prevent event bubbling
+    noop() {
+      // Do nothing
     }
   }
 })

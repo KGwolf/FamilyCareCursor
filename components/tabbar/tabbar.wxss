@@ -104,3 +104,181 @@
 .filled {
   /* SVG 填充逻辑通常通过 path 切换或 CSS 变量，这里简单处理 */
 }
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10rpx);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-container {
+  width: 100%;
+  max-width: 375px;
+  padding: 64rpx 32rpx 80rpx;
+  background-color: #ffffff;
+  border-top-left-radius: 80rpx;
+  border-top-right-radius: 80rpx;
+  box-shadow: 0 -20rpx 60rpx rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: slideUp 0.3s ease;
+  box-sizing: border-box;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #0f172a;
+  margin-bottom: 64rpx;
+  text-align: center;
+}
+
+.modal-grid {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 64rpx;
+}
+
+.modal-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.1s;
+  flex: 1;
+  max-width: 33.33%;
+}
+
+.modal-button:active {
+  transform: scale(0.9);
+}
+
+.modal-icon {
+  width: 128rpx;
+  height: 128rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+}
+
+.modal-icon.blue {
+  background-color: #eff6ff;
+  color: #3b82f6;
+}
+
+.modal-icon.green {
+  background-color: #f0fdf4;
+  color: #10b981;
+}
+
+.modal-icon.orange {
+  background-color: #fff7ed;
+  color: #f97316;
+}
+
+.modal-label {
+  font-size: 24rpx;
+  font-weight: bold;
+  color: #64748b;
+}
+
+.modal-close {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background-color: #f8fafc;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16rpx;
+  transition: transform 0.1s;
+}
+
+.modal-close:active {
+  transform: scale(0.9);
+}
+
+.close-icon {
+  font-size: 48rpx;
+  color: #94a3b8;
+  font-weight: bold;
+}
+
+.icon {
+  font-size: 48rpx;
+  line-height: 1;
+  display: inline-block;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Dark Mode Support */
+.tabbar.dark .modal-container {
+  background-color: #1e293b;
+}
+
+.tabbar.dark .modal-title {
+  color: #f8fafc;
+}
+
+.tabbar.dark .modal-label {
+  color: #cbd5e1;
+}
+
+.tabbar.dark .modal-icon.blue {
+  background-color: rgba(59, 130, 246, 0.2);
+}
+
+.tabbar.dark .modal-icon.green {
+  background-color: rgba(16, 185, 129, 0.2);
+}
+
+.tabbar.dark .modal-icon.orange {
+  background-color: rgba(249, 115, 22, 0.2);
+}
+
+.tabbar.dark .modal-close {
+  background-color: #334155;
+}
+
+.tabbar.dark .close-icon {
+  color: #94a3b8;
+}

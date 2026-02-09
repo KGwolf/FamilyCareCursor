@@ -16,32 +16,27 @@
   </view>
 
   <scroll-view class="main-content" scroll-y>
-    <!-- Record Time -->
-    <view class="time-picker-card" bindtap="onSelectTime">
-      <view class="time-label-group">
-        <text class="time-calendar-icon">📅</text>
-        <text class="time-label-text">记录时间</text>
-      </view>
-      <view class="time-value-group">
-        <text class="time-value-text">{{recordTime}}</text>
-        <text class="time-dropdown-icon">▼</text>
-      </view>
-    </view>
-
     <!-- Weight Section -->
     <view wx:if="{{activeTab === 'weight'}}" class="weight-section">
       <view class="weight-card">
-        <text class="weight-subtitle">CURRENT WEIGHT</text>
-        <view class="weight-value-row">
-          <text class="weight-value">{{weight}}</text>
-          <text class="weight-unit">kg</text>
-        </view>
-        <view class="edit-btn">
-          <text class="icon-edit">✏️</text>
+        <text class="weight-subtitle">当前体重 (kg)</text>
+        <view class="weight-display-container">
+          <view class="weight-value-row">
+            <input 
+              class="weight-input" 
+              type="digit" 
+              value="{{weight}}" 
+              placeholder="0.0"
+              bindinput="onWeightInput"
+              focus="{{activeTab === 'weight'}}"
+            />
+            <text class="weight-unit">kg</text>
+          </view>
+          <text class="weight-input-tip">点击上方数值修改</text>
         </view>
         
-        <view class="diff-tag">
-          <text class="diff-text">比上次记录 <text class="diff-highlight">{{weightDiff}}kg</text></text>
+        <view class="diff-tag" wx:if="{{weight !== '' && weightDiff !== '0.0' && weightDiff !== '0'}}">
+          <text class="diff-text">比上次记录 <text class="diff-highlight">{{weightDiff > 0 ? '+' : ''}}{{weightDiff}}kg</text></text>
         </view>
       </view>
     </view>
@@ -54,17 +49,17 @@
       </view>
       
       <view class="symptom-grid">
-        <view 
-          wx:for="{{symptoms}}" 
-          wx:key="id" 
-          class="symptom-item {{item.selected ? 'selected border-' + item.color : ''}}"
-          bindtap="onSymptomTap"
-          data-id="{{item.id}}"
-        >
-          <view class="symptom-icon-wrapper bg-{{item.color}} {{item.selected ? 'selected' : ''}}">
-            <text class="symptom-icon">{{item.icon}}</text>
+        <view wx:for="{{symptoms}}" wx:key="id" class="symptom-col">
+          <view 
+            class="symptom-item {{item.selected ? 'selected border-' + item.color : ''}}"
+            bindtap="onSymptomTap"
+            data-id="{{item.id}}"
+          >
+            <view class="symptom-icon-wrapper bg-{{item.color}} {{item.selected ? 'selected' : ''}}">
+              <text class="symptom-icon">{{item.icon}}</text>
+            </view>
+            <text class="symptom-name {{item.selected ? 'selected' : ''}}">{{item.name}}</text>
           </view>
-          <text class="symptom-name {{item.selected ? 'selected' : ''}}">{{item.name}}</text>
         </view>
       </view>
     </view>

@@ -1,14 +1,13 @@
-// pages/addReminder/addReminder.js
+const { DataManager } = require('../../utils/data-manager');
+const app = getApp();
+
 Page({
   data: {
-    // 当前对象
     currentTarget: {
-      id: 1,
-      name: '爸爸',
+      id: null,
+      name: '',
       avatar: ''
     },
-    
-    // 提醒类型列表
     reminderTypes: [
       { id: 1, name: '用药提醒', icon: '💊' },
       { id: 2, name: '喝水提醒', icon: '💧' },
@@ -18,49 +17,91 @@ Page({
       { id: 6, name: '其他提醒', icon: '📝' }
     ],
     selectedTypeIndex: 0,
-    
-    // 时间
     selectedTime: '08:30',
-    
-    // 频率选项
     frequencyOptions: [
       { id: 1, name: '每天', value: 'daily' },
       { id: 2, name: '每周一次', value: 'weekly' },
       { id: 3, name: '自定义', value: 'custom' }
     ],
     selectedFreqIndex: 0,
-    
-    // 备注
     remark: ''
   },
 
+  timers: [],
+
   onLoad(options) {
-    // 如果有传入家人ID，获取对应信息
+    this.loadCurrentFamily();
+    
     if (options.familyId) {
       this.loadFamilyInfo(options.familyId);
     }
   },
 
-  // 加载家人信息
-  loadFamilyInfo(familyId) {
-    // TODO: 从存储或接口获取家人信息
-    console.log('加载家人信息:', familyId);
+  onUnload() {
+    this.clearAllTimers();
   },
 
-  // 切换对象
+  clearAllTimers() {
+    this.timers.forEach(timer => clearTimeout(timer));
+    this.timers = [];
+  },
+
+  setTimeout(callback, delay) {
+    const timer = setTimeout(() => {
+      callback();
+      this.timers = this.timers.filter(t => t !== timer);
+    }, delay);
+    this.timers.push(timer);
+    return timer;
+  },
+
+  loadCurrentFamily() {
+    const currentFamily = app.globalData.currentFamily;
+    if (currentFamily) {
+      this.setData({
+        'currentTarget.id': currentFamily.id,
+        'currentTarget.name': currentFamily.name,
+        'currentTarget.avatar': currentFamily.avatar
+      });
+    }
+  },
+
+  loadFamilyInfo(familyId) {
+    const familyMembers = app.globalData.familyMembers;
+    const family = familyMembers.find(m => m.id === familyId);
+    if (family) {
+      this.setData({
+        'currentTarget.id': family.id,
+        'currentTarget.name': family.name,
+        'currentTarget.avatar': family.avatar
+      });
+    }
+  },
+
   onSwitchTarget() {
+    const familyMembers = app.globalData.familyMembers;
+    if (familyMembers.length === 0) {
+      wx.showToast({
+        title: '暂无家人',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    const names = familyMembers.map(m => m.name);
     wx.showActionSheet({
-      itemList: ['爸爸', '妈妈', '爷爷', '奶奶'],
+      itemList: names,
       success: (res) => {
-        const names = ['爸爸', '妈妈', '爷爷', '奶奶'];
+        const selected = familyMembers[res.tapIndex];
         this.setData({
-          'currentTarget.name': names[res.tapIndex]
+          'currentTarget.id': selected.id,
+          'currentTarget.name': selected.name,
+          'currentTarget.avatar': selected.avatar
         });
       }
     });
   },
 
-  // 选择提醒类型
   onSelectType() {
     const { reminderTypes } = this.data;
     const itemList = reminderTypes.map(item => `${item.icon} ${item.name}`);
@@ -75,33 +116,27 @@ Page({
     });
   },
 
-  // 选择时间
   onSelectTime() {
     const that = this;
-    wx.showModal({
-      title: '选择时间',
-      editable: true,
-      placeholderText: '请输入时间，格式：HH:MM',
+    // 提供一些常用的时间选项
+    const timeOptions = [
+      '06:00', '07:00', '08:00', '09:00',
+      '10:00', '11:00', '12:00', '13:00',
+      '14:00', '15:00', '16:00', '17:00',
+      '18:00', '19:00', '20:00', '21:00',
+      '22:00', '23:00'
+    ];
+    
+    wx.showActionSheet({
+      itemList: timeOptions,
       success(res) {
-        if (res.confirm && res.content) {
-          // 简单验证时间格式
-          const timeRegex = /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/;
-          if (timeRegex.test(res.content)) {
-            that.setData({
-              selectedTime: res.content
-            });
-          } else {
-            wx.showToast({
-              title: '时间格式不正确',
-              icon: 'none'
-            });
-          }
-        }
+        that.setData({
+          selectedTime: timeOptions[res.tapIndex]
+        });
       }
     });
   },
 
-  // 选择频率
   onSelectFrequency() {
     const { frequencyOptions, selectedFreqIndex } = this.data;
     const itemList = frequencyOptions.map(item => item.name);
@@ -116,7 +151,6 @@ Page({
     });
   },
 
-  // 频率按钮点击
   onFreqSelect(e) {
     const index = e.currentTarget.dataset.index;
     this.setData({
@@ -124,40 +158,54 @@ Page({
     });
   },
 
-  // 备注输入
   onRemarkInput(e) {
     this.setData({
       remark: e.detail.value
     });
   },
 
-  // 提交
   onSubmit() {
     const { currentTarget, reminderTypes, selectedTypeIndex, selectedTime, frequencyOptions, selectedFreqIndex, remark } = this.data;
     
-    // 构建提醒数据
+    if (!currentTarget.id) {
+      wx.showToast({
+        title: '请选择提醒对象',
+        icon: 'none'
+      });
+      return;
+    }
+
     const reminderData = {
-      targetId: currentTarget.id,
+      id: Date.now(),
+      familyId: currentTarget.id,
       targetName: currentTarget.name,
       type: reminderTypes[selectedTypeIndex],
       time: selectedTime,
-      frequency: frequencyOptions[selectedFreqIndex],
+      frequency: frequencyOptions[selectedFreqIndex].value,
+      date: DataManager.formatDate(new Date()),
       remark: remark,
+      completed: false,
       createTime: new Date().toISOString()
     };
 
-    console.log('提交提醒:', reminderData);
+    const success = DataManager.addReminder(reminderData);
 
-    // TODO: 保存到存储或上传到服务器
-    wx.showToast({
-      title: '添加成功',
-      icon: 'success',
-      duration: 1500,
-      success: () => {
-        setTimeout(() => {
-          wx.navigateBack();
-        }, 1500);
-      }
-    });
+    if (success) {
+      wx.showToast({
+        title: '添加成功',
+        icon: 'success',
+        duration: 1500,
+        success: () => {
+          this.setTimeout(() => {
+            wx.navigateBack();
+          }, 1500);
+        }
+      });
+    } else {
+      wx.showToast({
+        title: '添加失败，请重试',
+        icon: 'none'
+      });
+    }
   }
 });
