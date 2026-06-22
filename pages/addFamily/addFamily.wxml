@@ -62,6 +62,21 @@
       </view>
     </view>
 
+    <!-- 备注输入 -->
+    <view class="form-group">
+      <view class="form-label">
+        <view class="label-indicator"></view>
+        <text class="label-text">备注</text>
+      </view>
+      <input 
+        type="text" 
+        placeholder="请输入备注信息（可选）" 
+        value="{{formData.remark}}"
+        bindinput="onRemarkInput"
+        class="form-input"
+      />
+    </view>
+
     <!-- 头像选择 -->
     <view class="form-group">
       <view class="form-label">
@@ -83,9 +98,9 @@
             </view>
           </view>
           <!-- 添加自定义头像按钮 -->
-          <view class="avatar-add" bindtap="onChooseCustomAvatar">
+          <!-- <view class="avatar-add" bindtap="onChooseCustomAvatar">
             <text class="add-icon">＋</text>
-          </view>
+          </view> -->
         </view>
       </scroll-view>
     </view>

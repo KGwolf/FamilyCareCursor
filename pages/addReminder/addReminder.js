@@ -8,33 +8,29 @@ Page({
       name: '',
       avatar: ''
     },
-    reminderTypes: [
-      { id: 1, name: '用药提醒', icon: '💊' },
-      { id: 2, name: '喝水提醒', icon: '💧' },
-      { id: 3, name: '运动提醒', icon: '🏃' },
-      { id: 4, name: '测量提醒', icon: '📊' },
-      { id: 5, name: '就医提醒', icon: '🏥' },
-      { id: 6, name: '其他提醒', icon: '📝' }
-    ],
+    reminderTypes: [],
     selectedTypeIndex: 0,
     selectedTime: '08:30',
     frequencyOptions: [
       { id: 1, name: '每天', value: 'daily' },
-      { id: 2, name: '每周一次', value: 'weekly' },
-      { id: 3, name: '自定义', value: 'custom' }
+      { id: 2, name: '自定义', value: 'custom' }
     ],
     selectedFreqIndex: 0,
+    selectedDate: new Date().toISOString().split('T')[0], // 初始化为今天
     remark: ''
   },
 
-  timers: [],
-
   onLoad(options) {
+    this.timers = [];
     this.loadCurrentFamily();
-    
+
     if (options.familyId) {
       this.loadFamilyInfo(options.familyId);
     }
+  },
+
+  onShow() {
+    this.loadReminderTypes();
   },
 
   onUnload() {
@@ -42,7 +38,9 @@ Page({
   },
 
   clearAllTimers() {
-    this.timers.forEach(timer => clearTimeout(timer));
+    if (this.timers && Array.isArray(this.timers)) {
+      this.timers.forEach(timer => clearTimeout(timer));
+    }
     this.timers = [];
   },
 
@@ -78,6 +76,15 @@ Page({
     }
   },
 
+  loadReminderTypes() {
+    if (DataManager && typeof DataManager.getReminderTypes === 'function') {
+      const types = DataManager.getReminderTypes();
+      this.setData({
+        reminderTypes: types
+      });
+    }
+  },
+
   onSwitchTarget() {
     const familyMembers = app.globalData.familyMembers;
     if (familyMembers.length === 0) {
@@ -102,52 +109,9 @@ Page({
     });
   },
 
-  onSelectType() {
-    const { reminderTypes } = this.data;
-    const itemList = reminderTypes.map(item => `${item.icon} ${item.name}`);
-    
-    wx.showActionSheet({
-      itemList,
-      success: (res) => {
-        this.setData({
-          selectedTypeIndex: res.tapIndex
-        });
-      }
-    });
-  },
-
-  onSelectTime() {
-    const that = this;
-    // 提供一些常用的时间选项
-    const timeOptions = [
-      '06:00', '07:00', '08:00', '09:00',
-      '10:00', '11:00', '12:00', '13:00',
-      '14:00', '15:00', '16:00', '17:00',
-      '18:00', '19:00', '20:00', '21:00',
-      '22:00', '23:00'
-    ];
-    
-    wx.showActionSheet({
-      itemList: timeOptions,
-      success(res) {
-        that.setData({
-          selectedTime: timeOptions[res.tapIndex]
-        });
-      }
-    });
-  },
-
-  onSelectFrequency() {
-    const { frequencyOptions, selectedFreqIndex } = this.data;
-    const itemList = frequencyOptions.map(item => item.name);
-    
-    wx.showActionSheet({
-      itemList,
-      success: (res) => {
-        this.setData({
-          selectedFreqIndex: res.tapIndex
-        });
-      }
+  onSelectType(e) {
+    this.setData({
+      selectedTypeIndex: e.detail.value
     });
   },
 
@@ -155,6 +119,18 @@ Page({
     const index = e.currentTarget.dataset.index;
     this.setData({
       selectedFreqIndex: index
+    });
+  },
+
+  onDateChange(e) {
+    this.setData({
+      selectedDate: e.detail.value
+    });
+  },
+
+  onTimeChange(e) {
+    this.setData({
+      selectedTime: e.detail.value
     });
   },
 
@@ -182,7 +158,7 @@ Page({
       type: reminderTypes[selectedTypeIndex],
       time: selectedTime,
       frequency: frequencyOptions[selectedFreqIndex].value,
-      date: DataManager.formatDate(new Date()),
+      date: frequencyOptions[selectedFreqIndex].value === 'custom' ? this.data.selectedDate : DataManager.formatDate(new Date()),
       remark: remark,
       completed: false,
       createTime: new Date().toISOString()

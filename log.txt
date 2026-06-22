@@ -1,0 +1,191 @@
+编译 ext.json
+编译 10 个页面json文件
+pages/addReminder/addReminder.json: ["usingComponents"]["navigation-bar"]: "components/navigation-bar/navigation-bar"，在 G:/AI/project/FamilyCareTemplate/pages/addReminder/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/addReminder/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/addReminder/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/addReminder/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar/index 路径下未找到组件
+编译 app.json
+编译 ext.json
+编译 10 个页面json文件
+pages/addReminder/addReminder.json: ["usingComponents"]["navigation-bar"]: "components/navigation-bar/navigation-bar"，在 G:/AI/project/FamilyCareTemplate/pages/addReminder/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/addReminder/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/addReminder/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/addReminder/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar/index 路径下未找到组件
+编译 app.json
+编译 ext.json
+编译 10 个页面json文件
+pages/home/home.json: ["usingComponents"]["navigation-bar"]: "components/navigation-bar/navigation-bar"，在 G:/AI/project/FamilyCareTemplate/pages/home/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/home/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/home/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/home/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar/index 路径下未找到组件
+编译 app.json
+编译 ext.json
+编译 10 个页面json文件
+pages/home/home.json: ["usingComponents"]["navigation-bar"]: "components/navigation-bar/navigation-bar"，在 G:/AI/project/FamilyCareTemplate/pages/home/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/home/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/home/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/home/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar/index 路径下未找到组件
+编译 app.json
+编译 ext.json
+编译 10 个页面json文件
+pages/home/home.json: ["usingComponents"]["navigation-bar"]: "components/navigation-bar/navigation-bar"，在 G:/AI/project/FamilyCareTemplate/pages/home/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/home/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/home/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/home/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar/index 路径下未找到组件
+编译 app.json
+编译 ext.json
+编译 10 个页面json文件
+pages/home/home.json: ["usingComponents"]["navigation-bar"]: "components/navigation-bar/navigation-bar"，在 G:/AI/project/FamilyCareTemplate/pages/home/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/home/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/home/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/home/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar/index 路径下未找到组件
+编译 app.json
+编译 ext.json
+编译 10 个页面json文件
+pages/home/home.json: ["usingComponents"]["navigation-bar"]: "components/navigation-bar/navigation-bar"，在 G:/AI/project/FamilyCareTemplate/pages/home/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/home/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/home/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/home/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar/index 路径下未找到组件
+编译 app.json
+编译 ext.json
+编译 10 个页面json文件
+pages/home/home.json: ["usingComponents"]["navigation-bar"]: "components/navigation-bar/navigation-bar"，在 G:/AI/project/FamilyCareTemplate/pages/home/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/home/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/home/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/home/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar/index 路径下未找到组件
+编译 app.json
+编译 ext.json
+编译 10 个页面json文件
+pages/index/index.json: ["usingComponents"]["navigation-bar"]: "components/navigation-bar/navigation-bar"，在 G:/AI/project/FamilyCareTemplate/pages/index/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/index/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/index/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/index/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar/index 路径下未找到组件
+编译 app.json
+编译 ext.json
+编译 10 个页面json文件
+pages/index/index.json: ["usingComponents"]["navigation-bar"]: "components/navigation-bar/navigation-bar"，在 G:/AI/project/FamilyCareTemplate/pages/index/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/index/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/index/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/index/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar/index 路径下未找到组件
+编译 app.json
+编译 ext.json
+编译 10 个页面json文件
+pages/index/index.json: ["usingComponents"]["navigation-bar"]: "components/navigation-bar/navigation-bar"，在 G:/AI/project/FamilyCareTemplate/pages/index/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/index/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/index/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/index/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar/index 路径下未找到组件
+编译 app.json
+编译 ext.json
+编译 10 个页面json文件
+pages/index/index.json: ["usingComponents"]["navigation-bar"]: "components/navigation-bar/navigation-bar"，在 G:/AI/project/FamilyCareTemplate/pages/index/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/index/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/index/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/index/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar/index 路径下未找到组件
+编译 app.json
+编译 ext.json
+编译 10 个页面json文件
+pages/index/index.json: ["usingComponents"]["navigation-bar"]: "components/navigation-bar/navigation-bar"，在 G:/AI/project/FamilyCareTemplate/pages/index/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/index/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/index/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/index/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/pages/miniprogram_npm/components/navigation-bar/navigation-bar/index
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar
+G:/AI/project/FamilyCareTemplate/miniprogram_npm/components/navigation-bar/navigation-bar/index 路径下未找到组件
+编译 app.json
+app.json: app.json 中 "renderer" 设置为 "skyline"，需在 app.json 添加 "lazyCodeLoading": "requiredComponents"
+编译 app.json
+app.json: app.json 中 "renderer" 设置为 "skyline"，需在 app.json 添加 "lazyCodeLoading": "requiredComponents"
+编译 app.json
+app.json: app.json 中 "renderer" 设置为 "skyline"，需在 app.json 添加 "lazyCodeLoading": "requiredComponents"
+编译 app.json
+app.json: app.json 中 "renderer" 设置为 "skyline"，需在 app.json 添加 "lazyCodeLoading": "requiredComponents"
+编译 app.json
+app.json: app.json 中 "renderer" 设置为 "skyline"，需在 app.json 添加 "lazyCodeLoading": "requiredComponents"
+编译 app.json
+app.json: app.json 中 "renderer" 设置为 "skyline"，需在 app.json 添加 "lazyCodeLoading": "requiredComponents"
+编译 app.json
+app.json: app.json 中 "renderer" 设置为 "skyline"，需在 app.json 添加 "lazyCodeLoading": "requiredComponents"
+编译 app.json
+app.json: app.json 中 "renderer" 设置为 "skyline"，需在 app.json 添加 "lazyCodeLoading": "requiredComponents"
+编译 app.json
+app.json: app.json 中 "renderer" 设置为 "skyline"，需在 app.json 添加 "lazyCodeLoading": "requiredComponents"
+编译 app.json
+app.json: app.json 中 "renderer" 设置为 "skyline"，需在 app.json 添加 "lazyCodeLoading": "requiredComponents"
+编译 app.json
+app.json: app.json 中 "renderer" 设置为 "skyline"，需在 app.json 添加 "lazyCodeLoading": "requiredComponents"
+编译 app.json
+编译 ext.json
+编译 10 个页面json文件
+编译 app.json
+编译 ext.json
+编译 10 个页面json文件
+编译 app.json
+编译 ext.json
+编译 10 个页面json文件
+编译 app.json
+编译 ext.json
+编译 10 个页面json文件
+编译 app.json
+编译 ext.json
+编译 10 个页面json文件
+编译 app.json
+编译 ext.json
+编译 10 个页面json文件
+编译 app.json
+编译 ext.json
+编译 10 个页面json文件
+编译 app.json
+编译 ext.json
+编译 10 个页面json文件
+编译 app.json
+编译 ext.json
+编译 10 个页面json文件

@@ -11,7 +11,7 @@ Page({
     familyList: [],
     remindEnabled: true,
     warningEnabled: true,
-    version: '2.2.0'
+    version: '1.0.0'
   },
 
   onLoad() {
@@ -43,18 +43,25 @@ Page({
   },
 
   getRelationColor(relation) {
-    const colors = {
-      'father': '#ecb613',
-      'mother': '#60a5fa',
-      'spouse': '#f472b6',
-      'other': '#94a3b8'
-    };
-    return colors[relation] || '#94a3b8';
+    return '#2F80ED';
   },
 
   onAddFamily() {
     wx.navigateTo({
       url: '/pages/addFamily/addFamily'
+    });
+  },
+
+  onEditFamily(e) {
+    const familyId = e.currentTarget.dataset.id;
+    wx.navigateTo({
+      url: '/pages/editFamily/editFamily?id='+familyId
+    });
+  },
+
+  onManageReminderTypes() {
+    wx.navigateTo({
+      url: '/pages/reminder-types/reminder-types'
     });
   },
 
@@ -81,7 +88,7 @@ Page({
   onAboutUs() {
     wx.showModal({
       title: '关于我们',
-      content: '家庭照护助手是一款专注于家庭健康管理的应用，帮助您更好地照顾家人的健康。',
+      content: '关爱家人小助手是一款专注于家人提醒、记录基础健康信息的应用，帮助您更好地照顾家人。',
       showCancel: false
     });
   },

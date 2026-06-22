@@ -52,6 +52,17 @@
   transition: fill 0.2s ease;
 }
 
+.icon-image {
+  width: 24px;
+  height: 24px;
+  transition: all 0.2s ease;
+}
+
+.add-button .icon-image {
+  width: 28px;
+  height: 28px;
+}
+
 .tab-item.active {
   color: #2563eb; /* text-primary */
 }

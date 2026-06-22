@@ -1,33 +1,7 @@
-@font-face {
-  font-family: 'Material Icons';
-  font-style: normal;
-  font-weight: 400;
-  src: url(https://fonts.gstatic.com/s/materialicons/v140/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
-}
-
-.material-icons {
-  font-family: 'Material Icons';
-  font-weight: normal;
-  font-style: normal;
-  font-size: 48rpx;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-block;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -webkit-font-smoothing: antialiased;
-}
-
-.filled {
-  font-variation-settings: 'FILL' 1;
-}
-
 .settings-page {
   height: 100vh;
-  background-color: #f8f8f6;
-  color: #1b180d;
+  background-color: #F8F9FB;
+  color: #333333;
 }
 
 .content-wrapper {
@@ -53,12 +27,13 @@
   width: 112rpx;
   height: 112rpx;
   border-radius: 50%;
-  background-color: rgba(236, 182, 19, 0.1);
+  background-color: #E9F1FA;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ecb613;
-  border: 2rpx solid rgba(236, 182, 19, 0.2);
+  color: #2F80ED;
+  border: 2rpx solid #ffffff;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.05);
   flex-shrink: 0;
 }
 
@@ -83,11 +58,10 @@
 
 .role-tag {
   font-size: 20rpx;
-  background-color: #ecb613;
-  color: #ffffff;
-  font-weight: bold;
+  background-color: #E9F1FA;
+  color: #2F80ED;
   padding: 4rpx 12rpx;
-  border-radius: 8rpx;
+  border-radius: 40rpx;
 }
 
 .user-phone {
@@ -127,13 +101,27 @@
 .add-btn {
   font-size: 24rpx;
   font-weight: bold;
-  color: #ecb613;
-  background-color: rgba(236, 182, 19, 0.1);
+  color: #2F80ED;
+  background-color: #E9F1FA;
   padding: 12rpx 30rpx;
   border-radius: 40rpx;
   display: flex;
   align-items: center;
   gap: 8rpx;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.item-left-simple {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.item-icon-blue {
+  color: #2F80ED;
+  font-size: 40rpx;
 }
 
 .add-icon {
@@ -183,9 +171,11 @@
 
 .item-relation {
   font-size: 20rpx;
+  background-color: #E6F4EA;
+  color: #34A853;
   margin-left: 16rpx;
   padding: 4rpx 12rpx;
-  border-radius: 8rpx;
+  border-radius: 40rpx;
 }
 
 .item-left {
@@ -209,7 +199,7 @@
 }
 
 .text-red {
-  color: #f87171;
+  color: #EA4335;
 }
 
 /* 其他辅助样式 */
@@ -236,7 +226,7 @@
 }
 
 .footer-icon {
-  color: #ecb613;
+  color: rgba(47, 128, 237, 0.2);
   font-size: 48rpx;
 }
 

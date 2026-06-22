@@ -5,9 +5,11 @@
     "pages/calendar/calendar",
     "pages/addReminder/addReminder",
     "pages/addFamily/addFamily",
+    "pages/editFamily/editFamily",
     "pages/records/records",
     "pages/addRecord/addRecord",
-    "pages/settings/settings"
+    "pages/settings/settings",
+    "pages/reminder-types/reminder-types"
   ],
   "window": {
     "navigationBarTextStyle": "black",

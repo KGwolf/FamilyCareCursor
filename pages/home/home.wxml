@@ -1,99 +1,114 @@
-
-  <navigation-bar id="navigationBar" title="首页" color="black" background="#FFF"></navigation-bar>
-<!-- pages/home/home.wxml -->
 <view class="page-container">
+  <navigation-bar id="navigationBar" back="{{false}}" title="首页" color="black" background="#FFF"></navigation-bar>
   
-  <!-- Header -->
-  <view class="header">
-    <view class="patient-selector" bindtap="onSwitchPatient">
-      <image class="avatar" src="{{currentPatient.avatar}}" mode="aspectFill"></image>
-      <view class="patient-info">
-        <view class="patient-name-row">
-          <text class="patient-name">{{currentPatient.name}}</text>
-          <text class="dropdown-arrow">▼</text>
-        </view>
-        <text class="switch-hint">点击切换患者</text>
-      </view>
-    </view>
-    <view class="notification-btn" bindtap="onNotification">🔔</view>
-  </view>
-
-  <!-- Navigation Tabs -->
-  <view class="nav-tabs">
-    <view 
-      class="tab-item {{activeTab === 'today' ? 'tab-active' : ''}}" 
-      bindtap="onTabChange" 
-      data-tab="today"
-    >今日概览</view>
-    <view 
-      class="tab-item {{activeTab === 'trends' ? 'tab-active' : ''}}" 
-      bindtap="onTabChange" 
-      data-tab="trends"
-    >健康趋势</view>
-    <view 
-      class="tab-item {{activeTab === 'records' ? 'tab-active' : ''}}" 
-      bindtap="onTabChange" 
-      data-tab="records"
-    >病历管理</view>
-  </view>
-
-  <!-- Main Content -->
-  <view class="main-content">
-    
-    <!-- Today's Tasks Header -->
-    <view class="tasks-header">
-      <view class="tasks-title-section">
-        <text class="tasks-title">今日照护任务</text>
-        <text class="tasks-date">{{todayDate}}</text>
-      </view>
-      <view class="tasks-progress-section">
-        <text class="progress-text">进度 {{completedTasks}}/{{totalTasks}}</text>
-        <view class="progress-bar">
-          <view class="progress-fill" style="width: {{progressPercent}}%"></view>
-        </view>
-      </view>
-
-    </view>
-
-    <!-- Task Cards -->
-    <view class="tasks-list">
-      <!-- Completed Task -->
-      <block wx:for="{{tasks}}" wx:key="id">
-        <view class="task-card {{item.completed ? 'task-completed' : ''}} {{item.important ? 'task-important' : ''}}" bindtap="onTaskTap" data-id="{{item.id}}">
-          <!-- Important Badge -->
-          <view class="important-badge" wx:if="{{item.important && !item.completed}}">重点关注</view>
-          
-          <view class="task-icon-wrapper {{item.completed ? 'icon-completed' : ''}} {{item.iconBg}}">
-            <text class="task-icon">{{item.icon}}</text>
+  <scroll-view class="content-scroll" scroll-y type="list" show-scrollbar="{{false}}">
+    <!-- Header -->
+    <view class="header">
+      <view class="patient-selector" bindtap="onSwitchPatient">
+        <image class="avatar" src="{{currentPatient.avatar}}" mode="aspectFill"></image>
+        <view class="patient-info">
+          <view class="patient-name-row">
+            <text class="patient-name">{{currentPatient.name}}</text>
+            <text class="dropdown-arrow">▼</text>
           </view>
-          
-          <view class="task-content">
-            <text class="task-title {{item.completed ? 'title-completed' : ''}}">{{item.time}} - {{item.title}}</text>
-            <view class="task-subtitle" wx:if="{{item.completed}}">
-              <text class="subtitle-success">做得很好💖</text>
-              <text class="subtitle-note"> • 已按时完成</text>
+          <text class="switch-hint">点击切换家人</text>
+        </view>
+      </view>
+      <view class="add-member-btn" bindtap="onAddMember">
+        <text class="plus-icon">+</text>
+      </view>
+      <!-- <view class="notification-btn" bindtap="onNotification">🔔</view> -->
+    </view>
+
+    <!-- Navigation Tabs -->
+    <!-- <view class="nav-tabs">
+      <view 
+        class="tab-item {{activeTab === 'today' ? 'tab-active' : ''}}" 
+        bindtap="onTabChange" 
+        data-tab="today"
+      >今日概览</view>
+      <view 
+        class="tab-item {{activeTab === 'trends' ? 'tab-active' : ''}}" 
+        bindtap="onTabChange" 
+        data-tab="trends"
+      >健康趋势</view>
+      <view 
+        class="tab-item {{activeTab === 'records' ? 'tab-active' : ''}}" 
+        bindtap="onTabChange" 
+        data-tab="records"
+      >病历管理</view>
+    </view> -->
+
+    <!-- Main Content -->
+    <view class="main-content">
+      
+      <!-- Today's Tasks Header -->
+      <view class="tasks-header">
+        <view class="tasks-title-section">
+          <text class="tasks-title">今日任务</text>
+          <text class="tasks-date">{{todayDate}}</text>
+        </view>
+        <view class="tasks-progress-section">
+          <text class="progress-text">进度 {{completedTasks}}/{{totalTasks}}</text>
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{progressPercent}}%"></view>
+          </view>
+        </view>
+
+      </view>
+
+      <!-- Task Cards -->
+      <view class="tasks-list">
+        <block wx:if="{{tasks.length > 0}}">
+          <!-- Completed Task -->
+          <block wx:for="{{tasks}}" wx:key="id">
+            <view class="task-card {{item.completed ? 'task-completed' : ''}} {{item.important ? 'task-important' : ''}}" bindtap="onTaskTap" data-id="{{item.id}}">
+              <!-- Important Badge -->
+              <view class="important-badge" wx:if="{{item.important && !item.completed}}">重点关注</view>
+              
+              <view class="task-icon-wrapper {{item.completed ? 'icon-completed' : ''}} {{item.iconBg}}">
+                <text class="task-icon material-icons">{{item.icon}}</text>
+              </view>
+              
+              <view class="task-content">
+                <text class="task-title {{item.completed ? 'title-completed' : ''}}">{{item.time}} - {{item.title}}</text>
+                <view class="task-subtitle" wx:if="{{item.completed}}">
+                  <text class="subtitle-success">做得很好💖</text>
+                  <text class="subtitle-note"> • 已按时完成</text>
+                </view>
+                <text class="task-subtitle">{{item.location}}</text>
+              </view>
+              
+              <view class="task-status {{item.completed ? 'status-completed' : 'status-pending'}}">
+                <text wx:if="{{item.completed}}" class="check-icon">✓</text>
+              </view>
+              
+              <view class="delete-btn" catchtap="onDeleteTask" data-id="{{item.id}}">
+                <text class="material-icons">delete_outline</text>
+              </view>
             </view>
-            <text class="task-subtitle" wx:else>{{item.location}}</text>
-          </view>
-          
-          <view class="task-status {{item.completed ? 'status-completed' : 'status-pending'}}">
-            <text wx:if="{{item.completed}}" class="check-icon">✓</text>
-          </view>
+          </block>
+        </block>
+        <view wx:else class="empty-tasks">
+          <text class="empty-text">点击下方添加记录按钮添加提醒事项</text>
         </view>
-      </block>
-    </view>
-
-    <!-- Motivational Card -->
-    <view class="motivation-card">
-      <view class="motivation-content">
-        <text class="motivation-title">照顾好自己 ❤️</text>
-        <text class="motivation-text">您是家人最强大的支柱，也请记得给自己留一点放松的时间 😊</text>
       </view>
-      <view class="motivation-btn" bindtap="onViewTips">查看心情贴士</view>
-      <view class="motivation-bg-circle"></view>
-    </view>
 
-  </view>
+      <!-- Motivational Card -->
+      <view class="motivation-card">
+        <view class="motivation-content">
+          <text class="motivation-title">照顾好自己 ❤️</text>
+          <text class="motivation-text">您是家人最强大的支柱，也请记得给自己留一点放松的时间 😊</text>
+        </view>
+        <view class="motivation-btn" bindtap="onViewTips">查看心情贴士</view>
+        <view class="motivation-bg-circle"></view>
+      </view>
+
+    </view>
+    
+    <!-- Tabbar Spacer -->
+    <view class="tabbar-spacer"></view>
+  </scroll-view>
 
   <!-- 底部导航 -->
   <tabbar activeTab="home" />

@@ -1,0 +1,79 @@
+<navigation-bar title="维护提醒类型" back="{{true}}" background="#f8f8f6"></navigation-bar>
+
+<scroll-view class="type-page" scroll-y show-scrollbar="{{false}}">
+  <view class="content-wrapper">
+    <!-- 类型列表 -->
+    <view class="section-group">
+      <view class="section-header">
+        <text class="section-title">提醒类型列表</text>
+        <view class="add-btn" bindtap="showAddModal">
+          <text class="material-icons add-icon">add</text>
+          <text>添加</text>
+        </view>
+      </view>
+      
+      <view class="list-container">
+        <view wx:for="{{typeList}}" wx:key="id" class="list-item">
+          <view class="item-left">
+            <view class="item-icon-box">
+              <text class="material-icons">{{item.icon}}</text>
+            </view>
+            <view class="item-info">
+              <text class="item-name">{{item.name}}</text>
+              <view wx:if="{{item.isKey}}" class="key-tag">重点关注</view>
+            </view>
+          </view>
+          
+          <view class="item-right">
+            <view wx:if="{{item.canDelete}}" class="delete-btn" bindtap="onDeleteType" data-id="{{item.id}}">
+              <text class="material-icons">delete_outline</text>
+            </view>
+            <text wx:else class="lock-icon material-icons">lock_outline</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <view class="tips">
+      <text class="material-icons tip-icon">info</text>
+      <text>默认类型（锁定图标）不可删除，用药和预约类型默认为重点关注。</text>
+    </view>
+  </view>
+</scroll-view>
+
+<!-- 添加类型的弹窗 -->
+<view class="modal-mask" wx:if="{{showModal}}" bindtap="hideAddModal"></view>
+<view class="modal-content {{showModal ? 'show' : ''}}">
+  <view class="modal-header">
+    <text>添加新类型</text>
+    <text class="material-icons close-btn" bindtap="hideAddModal">close</text>
+  </view>
+  
+  <view class="modal-body">
+    <view class="form-item">
+      <text class="label">类型名称</text>
+      <input class="input" placeholder="请输入类型名称" bindinput="onNameInput" value="{{newName}}" maxlength="10" />
+    </view>
+    
+    <view class="form-item">
+      <text class="label">重点关注</text>
+      <switch checked="{{newIsKey}}" bindchange="onIsKeyChange" color="#2F80ED" />
+    </view>
+    
+    <view class="icon-selector">
+      <text class="label">选择图标</text>
+      <view class="icon-grid">
+        <view wx:for="{{iconOptions}}" wx:key="*this" 
+              class="icon-item {{selectedIcon === item ? 'active' : ''}}" 
+              bindtap="onSelectIcon" data-icon="{{item}}">
+          <text class="material-icons">{{item}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <view class="modal-footer">
+    <button class="cancel-btn" bindtap="hideAddModal">取消</button>
+    <button class="confirm-btn" bindtap="onAddConfirm">确定添加</button>
+  </view>
+</view>

@@ -1,0 +1,112 @@
+<navigation-bar title="修改成员信息" back="{{true}}" background="#FFFFFF"></navigation-bar>
+
+<scroll-view class="page-container" scroll-y show-scrollbar="{{false}}">
+  <view class="content-wrapper">
+    <view class="card">
+      <!-- 头像区域 -->
+      <view class="avatar-section">
+        <view class="delete-top-btn" bindtap="onDeleteMember">移除成员</view>
+        <view class="avatar-container">
+          <view class="avatar" style="background-image: url('{{familyInfo.avatar || '/images/user1.png'}}');"></view>
+          <!-- <view class="avatar-edit-btn" bindtap="onChangeAvatar">
+            <text class="camera-icon">📷</text>
+          </view> -->
+        </view>
+        <!-- <text class="avatar-hint">点击更换头像</text> -->
+      </view>
+
+      <view class="form-section">
+        <!-- 姓名 -->
+        <view class="form-item">
+          <text class="form-label">姓名</text>
+          <input 
+            class="form-input {{nameFocused ? 'form-input-focus' : ''}}" 
+            type="text" 
+            value="{{familyInfo.name}}" 
+            bindinput="onNameInput"
+            bindfocus="onNameFocus"
+            bindblur="onNameBlur"
+            placeholder="请输入姓名"
+          />
+        </view>
+
+        <!-- 关系 -->
+        <view class="form-item">
+          <text class="form-label">关系</text>
+          <view class="relation-tags">
+            <view 
+              class="tag-item {{familyInfo.relation === 'father' ? 'tag-active' : ''}}"
+              bindtap="onRelationSelect"
+              data-value="father"
+            >父亲</view>
+            <view 
+              class="tag-item {{familyInfo.relation === 'mother' ? 'tag-active' : ''}}"
+              bindtap="onRelationSelect"
+              data-value="mother"
+            >母亲</view>
+            <view 
+              class="tag-item {{familyInfo.relation === 'spouse' ? 'tag-active' : ''}}"
+              bindtap="onRelationSelect"
+              data-value="spouse"
+            >配偶</view>
+            <view 
+              class="tag-item {{familyInfo.relation === 'other' ? 'tag-active' : ''}}"
+              bindtap="onRelationSelect"
+              data-value="other"
+            >其他</view>
+          </view>
+        </view>
+
+        <!-- 年龄和性别 -->
+        <view class="form-row">
+          <view class="form-item age-item">
+            <text class="form-label">年龄</text>
+            <input 
+              class="form-input {{ageFocused ? 'form-input-focus' : ''}}" 
+              type="number" 
+              value="{{familyInfo.age}}" 
+              bindinput="onAgeInput"
+              bindfocus="onAgeFocus"
+              bindblur="onAgeBlur"
+              placeholder="岁"
+            />
+          </view>
+          <view class="form-item gender-item">
+            <text class="form-label">性别</text>
+            <view class="gender-toggle">
+              <view 
+                class="gender-btn {{familyInfo.gender === 'male' ? 'active' : ''}}"
+                bindtap="onGenderSelect"
+                data-value="male"
+              >男</view>
+              <view 
+                class="gender-btn {{familyInfo.gender === 'female' ? 'active' : ''}}"
+                bindtap="onGenderSelect"
+                data-value="female"
+              >女</view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 健康备注 -->
+        <view class="form-item">
+          <text class="form-label">健康备注</text>
+          <textarea 
+            class="form-textarea {{remarkFocused ? 'form-input-focus' : ''}}" 
+            value="{{familyInfo.remark}}" 
+            bindinput="onRemarkInput"
+            bindfocus="onRemarkFocus"
+            bindblur="onRemarkBlur"
+            placeholder="记录病患的重要健康状况、禁忌等信息..."
+            rows="4"
+          ></textarea>
+        </view>
+      </view>
+    </view>
+  </view>
+</scroll-view>
+
+<!-- 底部保存按钮 -->
+<view class="bottom-bar">
+  <button class="save-btn" bindtap="onSaveChanges">保存修改</button>
+</view>

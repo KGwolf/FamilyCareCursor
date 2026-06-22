@@ -1,7 +1,19 @@
-.page-container {
+.records-page {
+  display: flex;
+  flex-direction: column;
   height: 100vh;
-  box-sizing: border-box;
   background-color: #f6f7f8;
+  overflow: hidden;
+}
+
+.content-scroll {
+  flex: 1;
+  width: 100%;
+  height: 0; /* Important for flex-grow to work correctly in some contexts */
+}
+
+.page-container {
+  display: none; /* We moved away from this class name to content-scroll */
 }
 
 /* Family Selector */
@@ -207,6 +219,7 @@
   padding: 12rpx 24rpx;
   border-radius: 100rpx;
   border: 1rpx solid transparent;
+  white-space: nowrap;
 }
 
 .tag-rose {
@@ -290,6 +303,7 @@
 
 .record-tags {
   display: flex;
+  flex-wrap: wrap;
   gap: 32rpx;
   margin-bottom: 16rpx;
 }
@@ -298,6 +312,7 @@
   display: flex;
   align-items: center;
   gap: 8rpx;
+  white-space: nowrap;
 }
 
 .tag-icon {
@@ -560,6 +575,10 @@
 }
 
 /* Reminders Section */
+.card-shadow {
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.02);
+}
+
 .overview-card {
   background: #fff;
   padding: 32rpx;
@@ -592,8 +611,91 @@
 }
 
 .overview-desc {
+  font-size: 22rpx;
+  color: #64748b;
+  white-space: nowrap;
+  display: flex;
+  align-items: baseline;
+}
+
+.num-highlight {
+  font-size: 32rpx;
+  font-weight: 800;
+  margin: 0 4rpx;
+  font-family: 'Lexend', sans-serif;
+}
+
+.text-blue {
+  color: #137fec;
+}
+
+.text-gray {
+  color: #475569;
+}
+
+.overview-stats {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  margin-top: 12rpx;
+  overflow: hidden;
+}
+
+.overview-desc-dot {
+  color: #cbd5e1;
   font-size: 20rpx;
-  color: #94a3b8;
+}
+
+.overview-progress {
+  flex-shrink: 0;
+  margin-left: 20rpx;
+}
+
+.progress-circle-wrap {
+  position: relative;
+  width: 90rpx;
+  height: 90rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-circle-css {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.progress-circle-inner {
+  position: absolute;
+  width: 76rpx;
+  height: 76rpx;
+  background: #fff;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.progress-content {
+  position: absolute;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  z-index: 2;
+}
+
+.progress-num {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #1e293b;
+}
+
+.progress-unit {
+  font-size: 16rpx;
+  color: #64748b;
+  margin-left: 1rpx;
 }
 
 .progress-ring {
@@ -667,6 +769,7 @@
   font-size: 24rpx;
   font-weight: bold;
   color: #1e293b;
+  white-space: nowrap;
 }
 
 .trend-period {
@@ -678,9 +781,16 @@
 }
 
 .trend-chart-container {
-  height: 192rpx;
+  height: 240rpx;
   width: 100%;
   position: relative;
+  margin-top: 20rpx;
+}
+
+.trend-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .trend-svg {
@@ -704,7 +814,8 @@
   display: flex;
   justify-content: space-between;
   margin-top: 16rpx;
-  font-size: 18rpx;
+  padding: 0 16px 0 40px; /* 同步 Canvas 的 padding.right(16) 和 padding.left(40) */
+  font-size: 16rpx;
   color: #94a3b8;
 }
 
@@ -742,6 +853,7 @@
   font-weight: bold;
   color: #64748b;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .missed-subtitle {
@@ -787,7 +899,10 @@
   align-items: center;
   justify-content: center;
   color: #f43f5e;
-  font-size: 32rpx;
+}
+
+.missed-item-icon .material-icons {
+  font-size: 40rpx;
 }
 
 .missed-item-content {
@@ -825,11 +940,11 @@
 
 .more-icon {
   color: #cbd5e1;
-  font-size: 32rpx;
+  font-size: 40rpx;
 }
 
 .bottom-spacer {
-  height: 200rpx;
+  height: calc(160rpx + env(safe-area-inset-bottom) + 40rpx);
 }
 
 /* FAB 位置也要在导航条之上 */

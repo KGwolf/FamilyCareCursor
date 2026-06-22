@@ -4,11 +4,21 @@
 .page-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
   background-color: #f9fafb;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
   color: #111827;
-  padding-bottom: calc(200rpx + env(safe-area-inset-bottom));
+  overflow: hidden;
+}
+
+.content-scroll {
+  flex: 1;
+  height: 0;
+}
+
+.tabbar-spacer {
+  height: calc(160rpx + env(safe-area-inset-bottom) + 40rpx);
+  width: 100%;
 }
 
 /* Header */
@@ -21,7 +31,7 @@
   padding: 24rpx 32rpx;
   border-bottom: 1rpx solid #f3f4f6;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
 }
 
@@ -30,17 +40,38 @@
   align-items: center;
   gap: 24rpx;
   background-color: #f9fafb;
-  padding: 12rpx 24rpx;
+  padding: 12rpx 48rpx 12rpx 12rpx;
   border-radius: 100rpx;
   border: 1rpx solid rgba(229, 231, 235, 0.5);
 }
 
+.add-member-btn {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 24rpx;
+  border: 2rpx dashed #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  flex-shrink: 0;
+  margin-left: 24rpx;
+  background-color: #f9fafb;
+}
+
+.plus-icon {
+  font-size: 48rpx;
+  font-weight: 300;
+  line-height: 1;
+}
+
 .avatar {
-  width: 64rpx;
-  height: 64rpx;
+  width: 88rpx;
+  height: 88rpx;
   border-radius: 50%;
   border: 4rpx solid #fff;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
 }
 
 .patient-info {
@@ -118,6 +149,8 @@
   display: flex;
   flex-direction: column;
   gap: 32rpx;
+  min-height: calc(100vh - 300rpx - env(safe-area-inset-bottom));
+  box-sizing: border-box;
 }
 
 /* Tasks Header */
@@ -126,6 +159,32 @@
   justify-content: space-between;
   align-items: flex-end;
   padding: 16rpx 0;
+  flex-shrink: 0;
+}
+
+/* Task Cards */
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+  flex: 1;
+}
+
+.empty-tasks {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 0;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #9ca3af;
+  text-align: center;
+  font-style: italic;
+  line-height: 1.6;
 }
 
 .tasks-title-section {
@@ -173,12 +232,6 @@
 }
 
 /* Task Cards */
-.tasks-list {
-  display: flex;
-  flex-direction: column;
-  gap: 24rpx;
-}
-
 .task-card {
   display: flex;
   align-items: center;
@@ -192,8 +245,8 @@
 }
 
 .task-completed {
-  background-color: rgba(240, 253, 244, 0.5);
-  border: 1rpx solid rgba(34, 197, 94, 0.1);
+  background-color: rgba(37, 99, 235, 0.05);
+  border: 1rpx solid rgba(37, 99, 235, 0.1);
 }
 
 .task-important {
@@ -242,7 +295,9 @@
   background-color: #f3e8ff;
 }
 
+/* Task Icon Style */
 .task-icon {
+  font-family: 'Material Icons';
   font-size: 40rpx;
 }
 
@@ -273,7 +328,7 @@
 }
 
 .subtitle-success {
-  color: #22c55e;
+  color: #2563eb;
   font-weight: 700;
 }
 
@@ -292,7 +347,7 @@
 }
 
 .status-completed {
-  background-color: #22c55e;
+  background-color: #2563eb;
 }
 
 .status-pending {
@@ -304,6 +359,25 @@
   color: #fff;
   font-size: 24rpx;
   font-weight: 700;
+}
+
+.delete-btn {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  margin-left: 8rpx;
+  flex-shrink: 0;
+}
+
+.delete-btn:active {
+  color: #ef4444;
+}
+
+.delete-btn .material-icons {
+  font-size: 36rpx;
 }
 
 /* Motivation Card */

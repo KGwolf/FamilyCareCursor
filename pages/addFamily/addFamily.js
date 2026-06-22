@@ -7,6 +7,7 @@ Page({
       name: '',
       relation: 'father',
       age: '',
+      remark: '',
       avatarId: 1,
       avatarUrl: ''
     },
@@ -17,10 +18,12 @@ Page({
       { label: '其他', value: 'other' }
     ],
     avatars: [
-      { id: 1, url: 'https://placehold.co/100x100/FFEDD5/8B4513?text=Family', bgColor: 'orange' },
-      { id: 2, url: 'https://placehold.co/100x100/DBEAFE/1E40AF?text=User', bgColor: 'blue' },
-      { id: 3, url: 'https://placehold.co/100x100/F3E8FF/6B21A8?text=User', bgColor: 'purple' },
-      { id: 4, url: 'https://placehold.co/100x100/DCFCE7/166534?text=User', bgColor: 'green' }
+      { id: 1, url: '/images/user1.png', bgColor: 'blue' },
+      { id: 2, url: '/images/user2.png', bgColor: 'green' },
+      { id: 3, url: '/images/user3.png', bgColor: 'orange' },
+      { id: 4, url: '/images/user4.png', bgColor: 'purple' },
+      { id: 5, url: '/images/user5.png', bgColor: 'red' },
+      { id: 6, url: '/images/user6.png', bgColor: 'yellow' }
     ]
   },
 
@@ -66,6 +69,12 @@ Page({
   onAgeInput(e) {
     this.setData({
       'formData.age': e.detail.value
+    });
+  },
+
+  onRemarkInput(e) {
+    this.setData({
+      'formData.remark': e.detail.value
     });
   },
 
@@ -161,6 +170,7 @@ Page({
       relation: formData.relation,
       relationLabel: relationLabel,
       age: parseInt(formData.age),
+      remark: formData.remark.trim(),
       avatar: avatarUrl,
       createdAt: new Date().toISOString()
     };

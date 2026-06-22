@@ -1,9 +1,9 @@
-<navigation-bar title="设置" back="{{true}}" background="#f8f8f6"></navigation-bar>
+<navigation-bar title="设置" back="{{false}}" background="#f8f8f6"></navigation-bar>
 
 <scroll-view class="settings-page" scroll-y show-scrollbar="{{false}}">
   <view class="content-wrapper">
     <!-- 用户信息卡片 -->
-    <view class="section-card profile-card" hover-class="active-scale">
+    <!-- <view class="section-card profile-card" hover-class="active-scale">
       <view class="avatar-box">
         <text class="material-icons">person</text>
       </view>
@@ -15,7 +15,7 @@
         <text class="user-phone">{{userInfo.phone}}</text>
       </view>
       <text class="material-icons arrow-icon">chevron_right</text>
-    </view>
+    </view> -->
 
     <!-- 家人管理 -->
     <view class="section-group">
@@ -27,7 +27,7 @@
         </view>
       </view>
       <view class="list-container">
-        <view wx:for="{{familyList}}" wx:key="id" class="list-item" hover-class="item-active">
+        <view wx:for="{{familyList}}" wx:key="id" class="list-item" hover-class="item-active" bindtap="onEditFamily" data-id="{{item.id}}">
           <view class="item-avatar"></view>
           <view class="item-info">
             <text class="item-name">{{item.name}}</text>
@@ -39,7 +39,7 @@
     </view>
 
     <!-- 通知与提醒 -->
-    <view class="section-group">
+    <!-- <view class="section-group">
       <text class="section-title">通知与提醒</text>
       <view class="list-container">
         <view class="list-item no-arrow">
@@ -47,14 +47,30 @@
             <text class="material-icons icon-orange">notifications_active</text>
             <text class="item-text">服药提醒</text>
           </view>
-          <switch checked="{{remindEnabled}}" bindchange="onRemindChange" color="#ecb613" />
+          <switch checked="{{remindEnabled}}" bindchange="onRemindChange" color="#2F80ED" />
         </view>
         <view class="list-item no-arrow">
           <view class="item-left">
             <text class="material-icons icon-blue">emergency_home</text>
             <text class="item-text">异常预警</text>
           </view>
-          <switch checked="{{warningEnabled}}" bindchange="onWarningChange" color="#ecb613" />
+          <switch checked="{{warningEnabled}}" bindchange="onWarningChange" color="#2F80ED" />
+        </view>
+      </view>
+    </view>
+
+    <!-- 提醒管理 -->
+    <view class="section-group">
+      <view class="section-header">
+        <text class="section-title">提醒管理</text>
+      </view>
+      <view class="list-container">
+        <view class="list-item" hover-class="item-active" bindtap="onManageReminderTypes">
+          <view class="item-left-simple">
+            <text class="material-icons item-icon-blue">category</text>
+            <text class="item-text">维护提醒类型</text>
+          </view>
+          <text class="material-icons arrow-icon">chevron_right</text>
         </view>
       </view>
     </view>
@@ -65,15 +81,15 @@
         <text class="item-text">关于我们</text>
         <text class="material-icons arrow-icon">chevron_right</text>
       </view>
-      <view class="list-item" bindtap="onLogout" hover-class="item-active">
+      <!-- <view class="list-item" bindtap="onLogout" hover-class="item-active">
         <text class="item-text text-red">退出登录</text>
-      </view>
+      </view> -->
     </view>
 
     <!-- 页脚 -->
     <view class="footer">
       <text class="material-icons footer-icon filled">favorite</text>
-      <text class="footer-motto">“用爱温暖每一份照护”</text>
+      <text class="footer-motto">“用爱温暖每一个家人”</text>
       <text class="footer-version">Version {{version}}</text>
     </view>
 

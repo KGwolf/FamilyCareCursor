@@ -1,12 +1,12 @@
 <!-- pages/calendar/calendar.wxml -->
 <view class="calendar-page {{darkMode ? 'dark' : ''}}">
-  <navigation-bar id="navigationBar" title="日程安排" color="black" background="#f6f7f8" back="{{true}}">
-    <view slot="left" class="nav-left">
+  <navigation-bar id="navigationBar" title="日程安排" color="black" background="#f6f7f8" back="{{false}}">
+    <!-- <view slot="left" class="nav-left">
       <text class="material-icons">account_circle</text>
     </view>
     <view slot="right" class="nav-right">
       <text class="material-icons">notifications</text>
-    </view>
+    </view> -->
   </navigation-bar>
 
   <scroll-view scroll-y class="main-scroll" enhanced show-scrollbar="{{false}}">
@@ -71,35 +71,45 @@
         <text class="section-date">{{todayDateStr}}</text>
       </view>
 
-      <view class="task-list">
-        <view wx:for="{{tasks}}" wx:key="id" class="task-item">
-          <view class="task-time-box">
-            <text class="task-time">{{item.time}}</text>
-            <text class="task-label">{{item.label}}</text>
-          </view>
-          <view class="task-info">
-            <text class="task-title">{{item.title}}</text>
-            <text class="task-desc">{{item.desc}}</text>
-          </view>
-          <view 
-            class="task-check {{item.completed ? 'checked' : ''}}" 
-            bindtap="toggleTask" 
-            data-id="{{item.id}}"
-          >
-            <text class="material-icons" wx:if="{{item.completed}}">check</text>
-          </view>
-        </view>
+      <view class="tasks-list">
+        <block wx:for="{{tasks}}" wx:key="id">
+          <view class="task-card {{item.completed ? 'task-completed' : ''}} {{item.important ? 'task-important' : ''}}" bindtap="onTaskTap" data-id="{{item.id}}">
+            <!-- Important Badge -->
+            <view class="important-badge" wx:if="{{item.important && !item.completed}}">重点关注</view>
+            
+            <view class="task-icon-wrapper {{item.completed ? 'icon-completed' : ''}} {{item.iconBg}}">
+              <text class="task-icon material-icons">{{item.icon}}</text>
+            </view>
+            
+            <view class="task-content">
+              <text class="task-title {{item.completed ? 'title-completed' : ''}}">{{item.time}} - {{item.title}}</text>
+              <view class="task-subtitle" wx:if="{{item.completed}}">
+                <text class="subtitle-success">做得很好💖</text>
+                <text class="subtitle-note"> • 已按时完成</text>
+              </view>
+              <text class="task-subtitle">{{item.location}}</text>
+            </view>
+            
+            <view class="task-status {{item.completed ? 'status-completed' : 'status-pending'}}">
+              <text wx:if="{{item.completed}}" class="check-icon">✓</text>
+            </view>
 
-        <!-- 温馨提醒 -->
-        <view class="remind-card">
-          <view class="remind-info">
-            <text class="remind-title">温馨提醒</text>
-            <text class="remind-text">今天也要关心爸爸哦~</text>
+            <view class="delete-btn" catchtap="onDeleteTask" data-id="{{item.id}}">
+              <text class="material-icons">delete_outline</text>
+            </view>
           </view>
-          <view class="remind-action" bindtap="goToGreet">
-            <text>去问候</text>
-            <text class="material-icons">arrow_forward</text>
-          </view>
+        </block>
+      </view>
+
+      <!-- 温馨提醒 -->
+      <view class="remind-card">
+        <view class="remind-info">
+          <text class="remind-title">温馨提醒</text>
+          <text class="remind-text">今天也要关心{{currentFamilyRelation || '家人'}}哦~</text>
+        </view>
+        <view class="remind-action" bindtap="goToGreet">
+          <text>去问候</text>
+          <text class="material-icons">arrow_forward</text>
         </view>
       </view>
     </view>

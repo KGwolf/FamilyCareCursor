@@ -1,4 +1,4 @@
-<navigation-bar title="记录健康状态" background="#f6f8f6" back="{{true}}" bindback="onBack"></navigation-bar>
+<navigation-bar title="记录健康状态" background="#ffffff" back="{{true}}" bindback="onBack"></navigation-bar>
 
 <view class="add-record-page">
   <!-- Tab Navigation -->
@@ -16,64 +16,66 @@
   </view>
 
   <scroll-view class="main-content" scroll-y>
-    <!-- Weight Section -->
-    <view wx:if="{{activeTab === 'weight'}}" class="weight-section">
-      <view class="weight-card">
-        <text class="weight-subtitle">当前体重 (kg)</text>
-        <view class="weight-display-container">
-          <view class="weight-value-row">
-            <input 
-              class="weight-input" 
-              type="digit" 
-              value="{{weight}}" 
-              placeholder="0.0"
-              bindinput="onWeightInput"
-              focus="{{activeTab === 'weight'}}"
-            />
-            <text class="weight-unit">kg</text>
+    <view class="content-container">
+      <!-- Weight Section -->
+      <view wx:if="{{activeTab === 'weight'}}" class="weight-section">
+        <view class="weight-card">
+          <text class="weight-subtitle">当前体重 (kg)</text>
+          <view class="weight-display-container">
+            <view class="weight-value-row">
+              <input 
+                class="weight-input" 
+                type="digit" 
+                value="{{weight}}" 
+                placeholder="0.0"
+                bindinput="onWeightInput"
+                focus="{{activeTab === 'weight'}}"
+              />
+              <text class="weight-unit">kg</text>
+            </view>
+            <text class="weight-input-tip">点击上方数值修改</text>
           </view>
-          <text class="weight-input-tip">点击上方数值修改</text>
+          
+          <view class="diff-tag" wx:if="{{weight !== '' && weightDiff !== '0.0' && weightDiff !== '0'}}">
+            <text class="diff-text">比上次记录 <text class="diff-highlight">{{weightDiff > 0 ? '+' : ''}}{{weightDiff}}kg</text></text>
+          </view>
+        </view>
+      </view>
+
+      <!-- Symptoms Section -->
+      <view wx:if="{{activeTab === 'symptoms'}}" class="symptoms-section">
+        <view class="section-header-row">
+          <text class="section-title">症状选择</text>
+          <text class="section-subtitle">可多选</text>
         </view>
         
-        <view class="diff-tag" wx:if="{{weight !== '' && weightDiff !== '0.0' && weightDiff !== '0'}}">
-          <text class="diff-text">比上次记录 <text class="diff-highlight">{{weightDiff > 0 ? '+' : ''}}{{weightDiff}}kg</text></text>
-        </view>
-      </view>
-    </view>
-
-    <!-- Symptoms Section -->
-    <view wx:if="{{activeTab === 'symptoms'}}" class="symptoms-section">
-      <view class="section-header-row">
-        <text class="section-title">症状选择</text>
-        <text class="section-subtitle">可多选</text>
-      </view>
-      
-      <view class="symptom-grid">
-        <view wx:for="{{symptoms}}" wx:key="id" class="symptom-col">
-          <view 
-            class="symptom-item {{item.selected ? 'selected border-' + item.color : ''}}"
-            bindtap="onSymptomTap"
-            data-id="{{item.id}}"
-          >
-            <view class="symptom-icon-wrapper bg-{{item.color}} {{item.selected ? 'selected' : ''}}">
-              <text class="symptom-icon">{{item.icon}}</text>
+        <view class="symptom-grid">
+          <view wx:for="{{symptoms}}" wx:key="id" class="symptom-col">
+            <view 
+              class="symptom-item {{item.selected ? 'selected border-' + item.color : ''}}"
+              bindtap="onSymptomTap"
+              data-id="{{item.id}}"
+            >
+              <view class="symptom-icon-wrapper bg-{{item.color}} {{item.selected ? 'selected' : ''}}">
+                <text class="symptom-icon">{{item.icon}}</text>
+              </view>
+              <text class="symptom-name {{item.selected ? 'selected' : ''}}">{{item.name}}</text>
             </view>
-            <text class="symptom-name {{item.selected ? 'selected' : ''}}">{{item.name}}</text>
           </view>
         </view>
       </view>
-    </view>
 
-    <!-- Notes Section -->
-    <view class="notes-section">
-      <text class="notes-label">{{activeTab === 'weight' ? '备注说明' : '症状描述'}}</text>
-      <textarea 
-        class="notes-input" 
-        placeholder="{{activeTab === 'weight' ? '输入体重相关的记录说明...' : '详细描述一下目前的身体状况，如疼痛部位、持续时间等...'}}" 
-        value="{{notes}}"
-        bindinput="onNoteInput"
-        maxlength="200"
-      ></textarea>
+      <!-- Notes Section -->
+      <view class="notes-section">
+        <text class="notes-label">{{activeTab === 'weight' ? '备注说明' : '症状描述'}}</text>
+        <textarea 
+          class="notes-input" 
+          placeholder="{{activeTab === 'weight' ? '输入体重相关的记录说明...' : '详细描述一下目前的身体状况，如疼痛部位、持续时间等...'}}" 
+          value="{{notes}}"
+          bindinput="onNoteInput"
+          maxlength="200"
+        ></textarea>
+      </view>
     </view>
   </scroll-view>
 

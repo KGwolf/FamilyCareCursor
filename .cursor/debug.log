@@ -1,0 +1,16 @@
+{"location":"editFamily.js","message":"页面加载","data":{"familyId":1770706237412,"renderer":"skyline"},"hypothesisId":"G","timestamp":1770710243038}
+{"location":"editFamily.js","message":"加载成员信息","data":{"familyId":1770706237412,"found":true,"relation":"other"},"hypothesisId":"D","timestamp":1770710243061}
+{"location":"editFamily.js","message":"页面加载","data":{"familyId":1770706237412,"renderer":"skyline"},"hypothesisId":"G","timestamp":1770710300053}
+{"location":"editFamily.js","message":"加载成员信息","data":{"familyId":1770706237412,"found":true,"relation":"other"},"hypothesisId":"D","timestamp":1770710300083}
+{"location":"editFamily.js","message":"选择关系","data":{"relation":"spouse"},"hypothesisId":"A","timestamp":1770710304997}
+{"location":"editFamily.js","message":"姓名输入框聚焦","data":{"nameFocused":true},"hypothesisId":"B","timestamp":1770710306194}
+{"location":"editFamily.js","message":"姓名输入","data":{"nameLength":4},"hypothesisId":"B","timestamp":1770710307978}
+{"location":"editFamily.js","message":"姓名输入框失焦","data":{"nameFocused":false},"hypothesisId":"B","timestamp":1770710316997}
+{"location":"editFamily.js","message":"年龄输入框聚焦","data":{"ageFocused":true},"hypothesisId":"B","timestamp":1770710317011}
+{"location":"editFamily.js","message":"年龄输入框失焦","data":{"ageFocused":false},"hypothesisId":"B","timestamp":1770710317038}
+{"location":"editFamily.js","message":"年龄输入框聚焦","data":{"ageFocused":true},"hypothesisId":"B","timestamp":1770710317068}
+{"location":"editFamily.js","message":"年龄输入框失焦","data":{"ageFocused":false},"hypothesisId":"B","timestamp":1770710317104}
+{"location":"editFamily.js","message":"年龄输入框聚焦","data":{"ageFocused":true},"hypothesisId":"B","timestamp":1770710317126}
+{"location":"editFamily.js","message":"年龄输入框失焦","data":{"ageFocused":false},"hypothesisId":"B","timestamp":1770710317157}
+{"location":"editFamily.js","message":"备注输入框聚焦","data":{"remarkFocused":true},"hypothesisId":"B","timestamp":1770710317396}
+{"location":"editFamily.js","message":"备注输入框失焦","data":{"remarkFocused":false},"hypothesisId":"B","timestamp":1770710318554}

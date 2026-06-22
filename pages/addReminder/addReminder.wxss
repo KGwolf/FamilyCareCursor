@@ -1,118 +1,104 @@
 /* pages/addReminder/addReminder.wxss */
 
-/* Page 根元素 */
 page {
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  background-color: #f9fafb;
+  background-color: #F8FAFC;
+  color: #1E293B;
+  font-family: 'Lexend', 'Noto Sans SC', sans-serif;
 }
 
-/* Page Container */
 .page-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  font-family: 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
-  box-sizing: border-box;
-  overflow: hidden;
+  height: 100vh;
 }
 
-/* Main Content */
 .main-content {
   flex: 1;
   padding: 32rpx;
   padding-bottom: 240rpx;
-  min-height: 0;
   box-sizing: border-box;
 }
 
-/* Ensure all cards have proper border-radius */
-.target-card,
-.type-selector,
-.time-card,
-.remark-input {
-  border-radius: 48rpx;
-  overflow: hidden;
-  box-sizing: border-box;
-  width: 100%;
-}
-
-/* Fix grid layout for time cards */
-.time-grid {
-  display: flex;
-  gap: 24rpx;
-  margin-bottom: 24rpx;
-}
-
-.time-card {
-  flex: 1;
+/* Common Card Style */
+.card {
+  background: #FFFFFF;
+  border-radius: 32rpx;
+  border: 2rpx solid #F1F5F9;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.02);
+  margin-bottom: 32rpx;
   padding: 32rpx;
-  background-color: #ffffff;
-  border-radius: 48rpx;
-  border: 2rpx solid #f3f4f6;
-  text-align: center;
-  box-sizing: border-box;
+  transition: all 0.2s ease;
 }
 
-/* 当前对象卡片 */
-.target-card {
+.card:active {
+  background-color: #F8FAFC;
+}
+
+/* Target Section */
+.target-section {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 32rpx;
-  background-color: #ffffff;
-  border-radius: 48rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
-  border: 2rpx solid #f3f4f6;
-  margin-bottom: 24rpx;
+  justify-content: space-between;
+  gap: 20rpx;
 }
 
 .target-info {
   display: flex;
   align-items: center;
   gap: 24rpx;
+  flex: 1;
+  min-width: 0; /* 允许子元素缩放 */
 }
 
 .target-avatar {
   width: 112rpx;
   height: 112rpx;
-  border-radius: 50%;
-  border: 4rpx solid rgba(34, 197, 94, 0.1);
+  border-radius: 56rpx;
+  border: 4rpx solid rgba(47, 128, 237, 0.1);
+  background-color: #F1F5F9;
+  flex-shrink: 0;
 }
 
 .target-details {
-  display: flex;
-  flex-direction: column;
-  gap: 8rpx;
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .target-name-row {
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  gap: 12rpx;
+  margin-bottom: 4rpx;
+  flex-wrap: nowrap; /* 禁止换行 */
 }
 
 .target-name {
   font-size: 36rpx;
   font-weight: 700;
-  color: #111827;
+  color: #0F172A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200rpx;
 }
 
 .target-badge {
-  background-color: rgba(34, 197, 94, 0.1);
-  color: #22c55e;
+  background: rgba(47, 128, 237, 0.1);
+  color: #2F80ED;
   font-size: 20rpx;
-  padding: 6rpx 16rpx;
+  padding: 4rpx 16rpx;
   border-radius: 100rpx;
   font-weight: 700;
+  white-space: nowrap; /* 禁止换行 */
+  flex-shrink: 0;
 }
 
 .target-desc {
-  color: #6b7280;
   font-size: 26rpx;
+  color: #64748B;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -121,210 +107,186 @@ page {
 .switch-btn {
   display: flex;
   align-items: center;
-  gap: 8rpx;
-  padding: 16rpx 24rpx;
-}
-
-.switch-icon {
-  font-size: 28rpx;
+  flex-direction: column; /* 图标文字垂直排布，如果需要水平可改回 row */
+  justify-content: center;
+  gap: 4rpx;
+  color: #2F80ED;
+  font-size: 24rpx;
+  font-weight: 600;
+  flex-shrink: 0;
+  padding-left: 20rpx;
+  border-left: 2rpx solid #F1F5F9;
 }
 
 .switch-text {
-  color: #22c55e;
-  font-size: 28rpx;
-  font-weight: 600;
+  white-space: nowrap;
 }
 
-/* 提示信息 */
-.tip-banner {
-  background-color: rgba(34, 197, 94, 0.05);
-  padding: 24rpx;
-  border-radius: 32rpx;
-  text-align: center;
-  margin-bottom: 48rpx;
+/* Form Groups */
+.form-group {
+  margin-bottom: 40rpx;
 }
 
-.tip-banner text {
-  color: #4b5563;
-  font-size: 28rpx;
-  font-weight: 500;
-}
-
-/* Form Section */
-.form-section {
-  margin-bottom: 48rpx;
-}
-
-.section-label {
+.group-label {
   display: block;
-  font-size: 26rpx;
+  font-size: 28rpx;
   font-weight: 700;
-  color: #374151;
+  color: #334155;
+  margin-left: 8rpx;
   margin-bottom: 16rpx;
 }
 
-/* 提醒类型选择器 */
-.type-selector {
-  display: flex;
-  align-items: center;
-  gap: 24rpx;
-  padding: 32rpx;
-  background-color: #ffffff;
-  border-radius: 48rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
-  border: 2rpx solid #f3f4f6;
-}
-
-.type-icon {
-  font-size: 40rpx;
-  color: #22c55e;
-}
-
-.type-text {
-  flex: 1;
-  font-size: 32rpx;
-  color: #111827;
-}
-
-.type-arrow {
-  font-size: 36rpx;
-  color: #d1d5db;
-}
-
-/* 时间选择网格 */
-.time-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24rpx;
+.group-sublabel {
+  display: block;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 2rpx;
+  margin-left: 8rpx;
   margin-bottom: 24rpx;
 }
 
-.time-card {
+.input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.inp {
+  width: 100%;
+  background: #FFFFFF;
+  border: 2rpx solid #E2E8F0;
+  border-radius: 32rpx;
   padding: 32rpx;
-  background-color: #ffffff;
-  border-radius: 48rpx;
-  border: 2rpx solid #f3f4f6;
-  text-align: center;
-}
-
-.time-label {
-  display: block;
-  color: #9ca3af;
-  font-size: 24rpx;
-  margin-bottom: 12rpx;
-}
-
-.time-value {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8rpx;
-}
-
-.time-icon {
-  font-size: 36rpx;
-}
-
-.time-text {
-  color: #22c55e;
-  font-size: 44rpx;
-  font-weight: 700;
-}
-
-.freq-value {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8rpx;
-}
-
-.freq-icon {
-  font-size: 32rpx;
-}
-
-.freq-text {
-  color: #374151;
   font-size: 30rpx;
-  font-weight: 700;
+  box-sizing: border-box;
 }
 
-/* 频率按钮组 */
-.freq-buttons {
+.inp-like {
+  width: 100%;
+  background: #FFFFFF;
+  border: 2rpx solid #E2E8F0;
+  border-radius: 32rpx;
+  padding: 32rpx 32rpx 32rpx 88rpx;
+  font-size: 30rpx;
+  box-sizing: border-box;
+  min-height: 104rpx;
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 32rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #2F80ED;
+  z-index: 2;
+}
+
+.remark-textarea {
+  min-height: 240rpx;
+  padding: 32rpx;
+}
+
+/* Time Grid */
+.time-grid {
+  display: flex; /* 改用 flex 确保在 picker 包裹下也能正常分列 */
+  gap: 24rpx;
+  margin-bottom: 32rpx;
+  width: 100%;
+}
+
+.time-card-wrapper, .time-grid > .card {
+  flex: 1;
+  min-width: 0;
+}
+
+.time-card {
+  margin-bottom: 0 !important; /* 强制移除底部间距 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32rpx 8rpx;
+  text-align: center;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.card-tag {
+  font-size: 20rpx;
+  color: #94A3B8;
+  margin-bottom: 8rpx;
+  white-space: nowrap;
+}
+
+.card-value {
+  font-size: 28rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  white-space: nowrap;
+}
+
+.primary-text {
+  color: #2F80ED;
+  font-size: 40rpx;
+}
+
+/* Frequency Tabs */
+.freq-tabs {
+  display: flex;
   gap: 16rpx;
 }
 
-.freq-btn {
-  padding: 16rpx 32rpx;
-  background-color: #ffffff;
-  border: 2rpx solid #f3f4f6;
+.tab-btn {
+  padding: 16rpx 40rpx;
   border-radius: 100rpx;
   font-size: 24rpx;
-  color: #6b7280;
-  transition: all 0.2s ease;
-}
-
-.freq-btn-active {
-  background-color: #22c55e;
-  color: #ffffff;
   font-weight: 700;
-  border-color: #22c55e;
+  background: #FFFFFF;
+  border: 2rpx solid #E2E8F0;
+  color: #64748B;
+  transition: all 0.2s;
 }
 
-/* 备注输入 */
-.remark-input {
-  width: 100%;
-  min-height: 200rpx;
-  padding: 32rpx;
-  background-color: #ffffff;
-  border-radius: 48rpx;
-  border: 2rpx solid #f3f4f6;
-  font-size: 30rpx;
-  color: #111827;
-  box-sizing: border-box;
-  line-height: 1.6;
+.tab-btn.active {
+  background: #2F80ED;
+  border-color: #2F80ED;
+  color: #FFFFFF;
+  box-shadow: 0 8rpx 20rpx rgba(47, 128, 237, 0.2);
 }
 
-.remark-input::placeholder {
-  color: #9ca3af;
-}
-
-/* Footer */
-.footer {
+/* Footer & Button */
+.footer-bar {
   position: fixed;
   bottom: 0;
   left: 0;
-  width: 100%;
-  padding: 48rpx;
-  background: linear-gradient(to top, #f9fafb 60%, rgba(249, 250, 251, 0.9) 80%, transparent);
-  box-sizing: border-box;
+  right: 0;
+  padding: 48rpx 32rpx;
+  background: linear-gradient(to top, #F8FAFC, rgba(248, 250, 252, 0.95), transparent);
+  z-index: 100;
 }
 
-.submit-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16rpx;
-  width: 100%;
-  padding: 32rpx 0;
-  background-color: #22c55e;
-  border-radius: 48rpx;
-  box-shadow: 0 16rpx 48rpx rgba(34, 197, 94, 0.3);
-  transition: all 0.2s ease;
+.confirm-btn {
+  width: 100% !important;
+  background: #2F80ED !important;
+  color: #FFFFFF !important;
+  font-size: 32rpx !important;
+  font-weight: 700 !important;
+  padding: 28rpx 0 !important;
+  border-radius: 32rpx !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 16rpx !important;
+  border: none !important;
+  box-shadow: 0 16rpx 40rpx rgba(47, 128, 237, 0.3) !important;
 }
 
-.submit-btn:active {
+.confirm-btn:active {
   transform: scale(0.98);
-  background-color: #16a34a;
-}
-
-.submit-icon {
-  font-size: 36rpx;
-}
-
-.submit-text {
-  color: #ffffff;
-  font-size: 36rpx;
-  font-weight: 700;
+  opacity: 0.9;
 }

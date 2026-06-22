@@ -6,7 +6,7 @@ Page({
     currentPatient: {
       id: 1,
       name: '王伯伯',
-      avatar: 'https://placehold.co/64x64'
+      avatar: '/images/user1.png'
     },
     familyMembers: [],
     activeTab: 'today',
@@ -78,7 +78,7 @@ Page({
       icon: r.type.icon,
       iconBg: r.completed ? 'icon-bg-white' : 'icon-bg-sky',
       completed: r.completed,
-      important: r.type.id === 1 || r.type.id === 5,
+      important: r.type.isKey,
       location: r.remark || ''
     }));
 
@@ -112,7 +112,7 @@ Page({
     
     if (familyMembers.length <= 1) {
       wx.showToast({
-        title: '暂无其他患者',
+        title: '暂无其他家人',
         icon: 'none'
       });
       return;
@@ -135,6 +135,12 @@ Page({
           });
         }
       }
+    });
+  },
+
+  onAddMember() {
+    wx.navigateTo({
+      url: '/pages/addFamily/addFamily'
     });
   },
 
@@ -175,42 +181,64 @@ Page({
     if (taskIndex === -1) return;
     
     const task = tasks[taskIndex];
+    const newCompletedStatus = !task.completed;
     
-    if (task.completed) {
-      wx.showModal({
-        title: task.title,
-        content: '此任务已完成',
-        showCancel: false
-      });
-    } else {
-      wx.showModal({
-        title: task.title,
-        content: task.location || '是否标记为已完成？',
-        confirmText: '完成',
-        success: (res) => {
-          if (res.confirm) {
-            const updatedTasks = [...tasks];
-            updatedTasks[taskIndex] = {
-              ...task,
-              completed: true,
-              iconBg: 'icon-bg-white'
-            };
-            
-            this.setData({
-              tasks: updatedTasks
-            });
-            
-            DataManager.updateReminder(taskId, { completed: true });
-            this.calculateProgress();
-            
+    wx.showModal({
+      title: task.title,
+      content: newCompletedStatus ? (task.location || '标记为已完成？') : '取消已完成状态？',
+      confirmText: newCompletedStatus ? '完成' : '取消完成',
+      success: (res) => {
+        if (res.confirm) {
+          const updatedTasks = [...tasks];
+          updatedTasks[taskIndex] = {
+            ...task,
+            completed: newCompletedStatus,
+            iconBg: newCompletedStatus ? 'icon-bg-white' : 'icon-bg-sky'
+          };
+          
+          this.setData({
+            tasks: updatedTasks
+          });
+          
+          const todayStr = DataManager.formatDate(new Date());
+          DataManager.toggleReminderCompletion(taskId, todayStr, newCompletedStatus);
+          this.calculateProgress();
+          
+          if (newCompletedStatus) {
             wx.showToast({
               title: '做得很好！💖',
               icon: 'success'
             });
           }
         }
-      });
-    }
+      }
+    });
+  },
+
+  onDeleteTask(e) {
+    const taskId = e.currentTarget.dataset.id;
+    wx.showModal({
+      title: '确认删除',
+      content: '确定要删除这条提醒吗？',
+      confirmColor: '#ef4444',
+      success: (res) => {
+        if (res.confirm) {
+          const success = DataManager.deleteReminder(taskId);
+          if (success) {
+            wx.showToast({
+              title: '已删除',
+              icon: 'success'
+            });
+            this.loadTodayTasks();
+          } else {
+            wx.showToast({
+              title: '删除失败',
+              icon: 'none'
+            });
+          }
+        }
+      }
+    });
   },
 
   onViewTips() {
