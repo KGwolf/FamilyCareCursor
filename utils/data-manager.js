@@ -9,11 +9,37 @@ const STORAGE_KEYS = {
   REMINDER_TYPES: 'reminderTypes'
 };
 
+const CLOUD_SYNC_KEYS = new Set([
+  STORAGE_KEYS.REMINDERS,
+  STORAGE_KEYS.SETTINGS
+]);
+
+function scheduleCloudSync(key) {
+  if (!CLOUD_SYNC_KEYS.has(key)) return;
+  try {
+    require('./cloud-sync').scheduleSync();
+  } catch (error) {
+    console.error('安排知晓云同步失败:', error);
+  }
+}
+
+function scheduleCloudDelete(tableKey, localId) {
+  try {
+    require('./cloud-sync').scheduleDelete(tableKey, localId);
+  } catch (error) {
+    console.error('安排知晓云删除同步失败:', error);
+  }
+}
+
 const DEFAULT_REMINDER_TYPES = [
-  { id: 1, name: '日常事项', icon: 'event_note', isKey: false, canDelete: false },
-  { id: 2, name: '用药提醒', icon: 'medication', isKey: true, canDelete: false },
-  { id: 3, name: '预约就诊', icon: 'event_available', isKey: true, canDelete: false },
-  { id: 4, name: '其它', icon: 'more_horiz', isKey: false, canDelete: false }
+  { id: 2, name: '用药', icon: 'medication', canDelete: false },
+  { id: 8, name: '健康监测', icon: 'health_and_safety', canDelete: false },
+  { id: 3, name: '就诊', icon: 'event_available', canDelete: false },
+  { id: 5, name: '复查', icon: 'fact_check', canDelete: false },
+  { id: 7, name: '检查', icon: 'assignment', canDelete: false },
+  { id: 6, name: '治疗护理', icon: 'medical_services', canDelete: false },
+  { id: 1, name: '日常照护', icon: 'event_note', canDelete: false },
+  { id: 4, name: '其他', icon: 'more_horiz', canDelete: false }
 ];
 
 const DataManager = {
@@ -30,6 +56,7 @@ const DataManager = {
   set(key, value) {
     try {
       wx.setStorageSync(key, value);
+      scheduleCloudSync(key);
       return true;
     } catch (err) {
       console.error('保存数据失败:', err);
@@ -99,6 +126,29 @@ const DataManager = {
     return this.get(STORAGE_KEYS.REMINDERS, []);
   },
 
+  // 新数据使用事项自身的 important；旧数据回退到 type.isKey，保证历史标记不丢失。
+  isReminderImportant(reminder) {
+    if (typeof reminder.important === 'boolean') {
+      return reminder.important;
+    }
+    return Boolean(reminder.type && reminder.type.isKey);
+  },
+
+  sortRemindersByPriority(reminders) {
+    return reminders.slice().sort((a, b) => {
+      if (Boolean(a.completed) !== Boolean(b.completed)) {
+        return a.completed ? 1 : -1;
+      }
+
+      if (!a.completed) {
+        const importantDiff = Number(this.isReminderImportant(b)) - Number(this.isReminderImportant(a));
+        if (importantDiff !== 0) return importantDiff;
+      }
+
+      return (a.time || '').localeCompare(b.time || '');
+    });
+  },
+
   addReminder(reminder) {
     const reminders = this.getReminders();
     reminders.push(reminder);
@@ -118,7 +168,9 @@ const DataManager = {
   deleteReminder(id) {
     const reminders = this.getReminders();
     const filtered = reminders.filter(r => r.id !== id);
-    return this.set(STORAGE_KEYS.REMINDERS, filtered);
+    const success = this.set(STORAGE_KEYS.REMINDERS, filtered);
+    if (success) scheduleCloudDelete('reminders', id);
+    return success;
   },
 
   getRemindersByFamilyId(familyId) {
@@ -138,7 +190,7 @@ const DataManager = {
     return reminders.filter(r => {
       // 1. 优先检查历史记录
       if (dateHistory.hasOwnProperty(r.id) || dateHistory.hasOwnProperty(String(r.id))) {
-        return true;
+        return dateHistory[r.id] !== 'hidden' && dateHistory[String(r.id)] !== 'hidden';
       }
 
       // 2. 检查指定日期的单次提醒
@@ -193,6 +245,15 @@ const DataManager = {
     return this.set(STORAGE_KEYS.REMINDER_HISTORY, history);
   },
 
+  hideReminderForDate(reminderId, date) {
+    const history = this.getReminderHistory();
+    if (!history[date]) {
+      history[date] = {};
+    }
+    history[date][reminderId] = 'hidden';
+    return this.set(STORAGE_KEYS.REMINDER_HISTORY, history);
+  },
+
   getReminderCompletionStatus(reminderId, date) {
     const history = this.getReminderHistory();
     const dateHistory = history[date] || {};
@@ -235,7 +296,13 @@ const DataManager = {
   getSettings() {
     return this.get(STORAGE_KEYS.SETTINGS, {
       remindEnabled: true,
-      warningEnabled: true
+      warningEnabled: true,
+      quietHoursEnabled: false,
+      quietHoursStart: '22:00',
+      quietHoursEnd: '08:00',
+      dailyPushLimit: 8,
+      subscriptionRenewalPromptLimit: 2,
+      notificationChannel: 'wechat_subscribe'
     });
   },
 
@@ -254,7 +321,7 @@ const DataManager = {
   getReminderTypes() {
     const storedTypes = this.get(STORAGE_KEYS.REMINDER_TYPES, []);
     
-    // 确保默认的 4 个类型始终存在且不可删除
+    // 确保内置事项类型始终存在且不可删除
     const types = [...DEFAULT_REMINDER_TYPES];
     
     // 合并存储的自定义类型（排除掉与默认类型 ID 重复的，虽然 ID 是时间戳应该不会重复）

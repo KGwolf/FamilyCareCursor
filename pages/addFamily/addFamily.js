@@ -21,9 +21,7 @@ Page({
       { id: 1, url: '/images/user1.png', bgColor: 'blue' },
       { id: 2, url: '/images/user2.png', bgColor: 'green' },
       { id: 3, url: '/images/user3.png', bgColor: 'orange' },
-      { id: 4, url: '/images/user4.png', bgColor: 'purple' },
-      { id: 5, url: '/images/user5.png', bgColor: 'red' },
-      { id: 6, url: '/images/user6.png', bgColor: 'yellow' }
+      { id: 4, url: '/images/user4.png', bgColor: 'purple' }
     ]
   },
 
@@ -128,16 +126,8 @@ Page({
       return false;
     }
     
-    if (!age) {
-      wx.showToast({
-        title: '请输入年龄',
-        icon: 'none'
-      });
-      return false;
-    }
-    
-    const ageNum = parseInt(age);
-    if (isNaN(ageNum) || ageNum < 0 || ageNum > 150) {
+    const ageNum = age === '' ? null : parseInt(age);
+    if (ageNum !== null && (isNaN(ageNum) || ageNum < 0 || ageNum > 150)) {
       wx.showToast({
         title: '请输入有效年龄',
         icon: 'none'
@@ -169,7 +159,7 @@ Page({
       name: formData.name.trim(),
       relation: formData.relation,
       relationLabel: relationLabel,
-      age: parseInt(formData.age),
+      age: formData.age === '' ? null : parseInt(formData.age),
       remark: formData.remark.trim(),
       avatar: avatarUrl,
       createdAt: new Date().toISOString()

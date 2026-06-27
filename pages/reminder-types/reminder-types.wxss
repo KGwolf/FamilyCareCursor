@@ -93,15 +93,6 @@
   margin-bottom: 4rpx;
 }
 
-.key-tag {
-  font-size: 20rpx;
-  color: #2F80ED;
-  background: rgba(47, 128, 237, 0.1);
-  padding: 2rpx 12rpx;
-  border-radius: 6rpx;
-  width: fit-content;
-}
-
 .item-right {
   display: flex;
   align-items: center;

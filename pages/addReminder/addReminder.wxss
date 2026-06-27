@@ -189,6 +189,17 @@ page {
   padding: 32rpx;
 }
 
+.important-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24rpx;
+}
+
+.important-copy { flex: 1; display: flex; flex-direction: column; }
+.important-title { color: #1e293b; font-size: 28rpx; font-weight: 700; }
+.important-desc { margin-top: 8rpx; color: #94a3b8; font-size: 22rpx; line-height: 1.5; }
+
 /* Time Grid */
 .time-grid {
   display: flex; /* 改用 flex 确保在 picker 包裹下也能正常分列 */
@@ -289,4 +300,8 @@ page {
 .confirm-btn:active {
   transform: scale(0.98);
   opacity: 0.9;
+}
+
+.confirm-btn.is-disabled {
+  opacity: 0.65;
 }

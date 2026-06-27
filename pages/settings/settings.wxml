@@ -1,23 +1,7 @@
-<navigation-bar title="设置" back="{{false}}" background="#f8f8f6"></navigation-bar>
+<navigation-bar title="设置" back="{{true}}" custom-back="{{true}}" bindback="onBack" background="#f8f8f6"></navigation-bar>
 
 <scroll-view class="settings-page" scroll-y show-scrollbar="{{false}}">
   <view class="content-wrapper">
-    <!-- 用户信息卡片 -->
-    <!-- <view class="section-card profile-card" hover-class="active-scale">
-      <view class="avatar-box">
-        <text class="material-icons">person</text>
-      </view>
-      <view class="profile-info">
-        <view class="name-row">
-          <text class="user-name">{{userInfo.name}}</text>
-          <text class="role-tag">{{userInfo.role}}</text>
-        </view>
-        <text class="user-phone">{{userInfo.phone}}</text>
-      </view>
-      <text class="material-icons arrow-icon">chevron_right</text>
-    </view> -->
-
-    <!-- 家人管理 -->
     <view class="section-group">
       <view class="section-header">
         <text class="section-title">家人管理</text>
@@ -38,28 +22,97 @@
       </view>
     </view>
 
-    <!-- 通知与提醒 -->
-    <!-- <view class="section-group">
-      <text class="section-title">通知与提醒</text>
+    <view class="section-group">
+      <view class="section-header">
+        <text class="section-title">通知与云端提醒</text>
+      </view>
       <view class="list-container">
         <view class="list-item no-arrow">
           <view class="item-left">
-            <text class="material-icons icon-orange">notifications_active</text>
-            <text class="item-text">服药提醒</text>
+            <text class="material-icons icon-blue">notifications_active</text>
+            <view class="item-copy">
+              <text class="item-text">接收提醒通知</text>
+              <text class="item-desc">状态：{{pushStatusText}}</text>
+            </view>
           </view>
           <switch checked="{{remindEnabled}}" bindchange="onRemindChange" color="#2F80ED" />
         </view>
+
         <view class="list-item no-arrow">
           <view class="item-left">
-            <text class="material-icons icon-blue">emergency_home</text>
-            <text class="item-text">异常预警</text>
+            <text class="material-icons icon-orange">nightlight</text>
+            <view class="item-copy">
+              <text class="item-text">免打扰时段</text>
+              <text class="item-desc">{{quietHoursStart}} - {{quietHoursEnd}}</text>
+            </view>
           </view>
-          <switch checked="{{warningEnabled}}" bindchange="onWarningChange" color="#2F80ED" />
+          <switch checked="{{quietHoursEnabled}}" bindchange="onQuietHoursChange" color="#2F80ED" />
+        </view>
+
+        <view class="list-item compact-row">
+          <text class="item-text">开始时间</text>
+          <picker mode="time" value="{{quietHoursStart}}" bindchange="onQuietStartChange">
+            <view class="picker-value">{{quietHoursStart}}</view>
+          </picker>
+        </view>
+
+        <view class="list-item compact-row">
+          <text class="item-text">结束时间</text>
+          <picker mode="time" value="{{quietHoursEnd}}" bindchange="onQuietEndChange">
+            <view class="picker-value">{{quietHoursEnd}}</view>
+          </picker>
+        </view>
+
+        <view class="list-item compact-row">
+          <view class="item-copy">
+            <text class="item-text">每日推送上限</text>
+            <text class="item-desc">超过后当天不再推送</text>
+          </view>
+          <input class="limit-input" type="number" value="{{dailyPushLimit}}" bindblur="onDailyLimitChange" />
+        </view>
+
+        <view class="list-item compact-row">
+          <view class="item-copy">
+            <text class="item-text">续授权提示次数</text>
+            <text class="item-desc">今日已提示 {{subscriptionRenewalPromptCount}} 次，0 表示不自动提示</text>
+          </view>
+          <input class="limit-input" type="number" value="{{subscriptionRenewalPromptLimit}}" bindblur="onRenewalPromptLimitChange" />
+        </view>
+
+        <view class="list-item compact-row">
+          <view class="item-copy">
+            <text class="item-text">提醒通道</text>
+            <text class="item-desc">{{bindingStatusText}}</text>
+          </view>
+          <picker range="{{channelOptions}}" range-key="label" value="{{channelIndex}}" bindchange="onChannelChange">
+            <view class="picker-value">{{channelOptions[channelIndex].label}}</view>
+          </picker>
+        </view>
+
+        <view wx:if="{{notificationChannel === 'wecom_external'}}" class="list-item" bindtap="onBindWecom" hover-class="item-active">
+          <view class="item-copy">
+            <text class="item-text">绑定企业微信</text>
+            <text class="item-desc">用于长期提醒，可随时在下方关闭云端提醒</text>
+          </view>
+          <text class="material-icons arrow-icon">chevron_right</text>
+        </view>
+      </view>
+
+      <view class="privacy-note">
+        我们只同步提醒时间和推送状态，不上传家人姓名、健康记录和备注内容。
+      </view>
+
+      <view class="list-container danger-container">
+        <view class="list-item" bindtap="onRevokeCloudNotifications" hover-class="item-active">
+          <view class="item-copy">
+            <text class="item-text text-red">关闭云端提醒</text>
+            <text class="item-desc">解除通知授权记录，本地数据不会删除</text>
+          </view>
+          <text class="material-icons arrow-icon">chevron_right</text>
         </view>
       </view>
     </view>
 
-    <!-- 提醒管理 -->
     <view class="section-group">
       <view class="section-header">
         <text class="section-title">提醒管理</text>
@@ -75,25 +128,19 @@
       </view>
     </view>
 
-    <!-- 其他选项 -->
     <view class="list-container margin-top-lg">
       <view class="list-item" bindtap="onAboutUs" hover-class="item-active">
         <text class="item-text">关于我们</text>
         <text class="material-icons arrow-icon">chevron_right</text>
       </view>
-      <!-- <view class="list-item" bindtap="onLogout" hover-class="item-active">
-        <text class="item-text text-red">退出登录</text>
-      </view> -->
     </view>
 
-    <!-- 页脚 -->
     <view class="footer">
       <text class="material-icons footer-icon filled">favorite</text>
-      <text class="footer-motto">“用爱温暖每一个家人”</text>
+      <text class="footer-motto">“记住每一件照护小事”</text>
       <text class="footer-version">Version {{version}}</text>
     </view>
 
-    <!-- 底部导航 -->
-  <tabbar activeTab="settings" />
+    <tabbar activeTab="settings" />
   </view>
 </scroll-view>

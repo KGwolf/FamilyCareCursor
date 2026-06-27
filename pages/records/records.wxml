@@ -1,5 +1,5 @@
 <view class="records-page">
-  <navigation-bar title="健康档案" background="#fff" back="{{false}}"></navigation-bar>
+  <navigation-bar title="照护回顾" background="#fff" back="{{false}}"></navigation-bar>
 
   <scroll-view class="content-scroll" scroll-y enable-passive>
     <!-- Family Member Selector -->
@@ -27,7 +27,7 @@
         class="tab-btn {{activeTab === 'reminders' ? 'active' : ''}}" 
         bindtap="onTabChange" 
         data-tab="reminders"
-      >提醒</view>
+      >事项</view>
       <view 
         class="tab-btn {{activeTab === 'weight' ? 'active' : ''}}" 
         bindtap="onTabChange" 
@@ -37,20 +37,36 @@
         class="tab-btn {{activeTab === 'symptoms' ? 'active-rose' : ''}}" 
         bindtap="onTabChange" 
         data-tab="symptoms"
-      >症状</view>
+      >身体状态</view>
+    </view>
+
+    <view class="range-toolbar">
+      <view class="range-options">
+        <view
+          wx:for="{{rangeOptions}}"
+          wx:key="days"
+          class="range-option {{selectedRangeDays === item.days ? 'active' : ''}}"
+          bindtap="onRangeChange"
+          data-days="{{item.days}}"
+        >{{item.label}}</view>
+      </view>
+      <view class="record-action" bindtap="onAddRecord" data-tab="{{activeTab}}">
+        {{activeTab === 'reminders' ? '添加事项' : (activeTab === 'weight' ? '记体重' : '记状态')}}
+      </view>
     </view>
 
     <!-- Reminders Section -->
     <view class="stats-section" wx:if="{{activeTab === 'reminders'}}">
+      <block wx:if="{{hasReminderData}}">
       <!-- Weekly Overview -->
       <view class="overview-card card-shadow">
         <view class="overview-info">
-          <text class="overview-label">WEEKLY OVERVIEW</text>
+          <text class="overview-label">{{rangeLabel}}事项完成情况</text>
           <text class="overview-title">{{completionStatus}}</text>
           <view class="overview-stats">
-            <text class="overview-desc">本周已完成 <text class="num-highlight text-blue">{{weeklyCompletedTotal}}</text> 项</text>
+            <text class="overview-desc">完成 <text class="num-highlight text-blue">{{weeklyCompletedTotal}}</text> 次</text>
             <text class="overview-desc-dot">·</text>
-            <text class="overview-desc">共有 <text class="num-highlight text-gray">{{reminderTotal}}</text> 项任务</text>
+            <text class="overview-desc">计划 <text class="num-highlight text-gray">{{reminderTotal}}</text> 次</text>
           </view>
         </view>
         <view class="overview-progress">
@@ -72,7 +88,11 @@
             <text class="trend-icon-sm">📈</text>
             <text class="trend-title">执行趋势</text>
           </view>
-          <text class="trend-period">近7日</text>
+          <text class="trend-period">{{rangeLabel}} · {{trendGranularity}}</text>
+        </view>
+        <view class="trend-legend">
+          <view class="legend-item"><view class="legend-dot done"></view><text>已完成</text></view>
+          <view class="legend-item"><view class="legend-dot planned"></view><text>计划次数</text></view>
         </view>
         <view class="trend-chart-container">
           <canvas
@@ -81,7 +101,6 @@
             style="width: {{trendCanvasCssW}}px; height: {{trendCanvasCssH}}px;"
             bindtouchstart="onTrendTouch"
           ></canvas>
-          <view class="trend-badge" wx:if="{{trendSelectedIndex >= 0}}">{{trendBadgeValue}}</view>
         </view>
         <view class="trend-labels">
           <text wx:for="{{trendLabels}}" wx:key="*this" class="{{item === '今日' ? 'current' : ''}}">{{item}}</text>
@@ -89,16 +108,16 @@
       </view>
 
       <!-- Missed Tasks -->
-      <view class="missed-section">
+      <view class="missed-section" wx:if="{{missedReminders.length > 0}}">
         <view class="missed-header">
           <view>
             <view class="missed-title-row">
               <text class="missed-icon-sm">⚠️</text>
-              <text class="missed-title">近48小时待补项</text>
+              <text class="missed-title">近48小时待确认</text>
             </view>
-            <text class="missed-subtitle">漏掉的任务可在此补齐</text>
+            <text class="missed-subtitle">请确认是否已完成或需要调整</text>
           </view>
-          <view class="retry-btn" bindtap="onRetryTask" wx:if="{{missedReminders.length > 0}}">去补录</view>
+          <view class="retry-btn" bindtap="onRetryTask">查看处理</view>
         </view>
 
         <view class="missed-item" wx:for="{{missedReminders}}" wx:key="id">
@@ -112,34 +131,48 @@
             </view>
             <text class="missed-item-time">计划时间: {{item.time}}</text>
           </view>
-          <text class="material-icons more-icon">more_horiz</text>
         </view>
+      </view>
+      <view class="all-clear-card" wx:else>
+        <text class="all-clear-title">近48小时没有待确认事项</text>
+        <text class="all-clear-desc">已完成的照护事项会继续保留在趋势中</text>
+      </view>
+      </block>
+
+      <view class="empty-state" wx:else>
+        <view class="empty-illustration blue">✓</view>
+        <text class="empty-title">{{rangeLabel}}还没有事项记录</text>
+        <text class="empty-desc">添加用药、复查或日常照护事项，完成后这里会生成执行回顾。</text>
+        <view class="empty-action" bindtap="onAddRecord" data-tab="reminders">添加第一条事项</view>
       </view>
     </view>
 
     <!-- Weight Chart Section -->
     <view class="stats-section" wx:if="{{activeTab === 'weight'}}">
-      <!-- ... 原有体重内容保持不变 ... -->
+      <block wx:if="{{hasWeightData}}">
       <view class="chart-card">
         <view class="chart-header">
           <view>
-            <text class="stat-label">当前体重 (kg)</text>
+            <text class="stat-label">最近一次体重</text>
             <view class="stat-value-row">
               <text class="stat-value">{{currentWeight}}</text>
               <text class="stat-unit">kg</text>
             </view>
           </view>
-          <view class="trend-tag {{weightDiff < 0 ? 'down' : 'up'}}">
-            <text class="trend-icon">{{weightDiff < 0 ? '↓' : '↑'}}</text>
-            <text>较上周 {{weightDiff}}kg</text>
+          <view class="trend-tag neutral" wx:if="{{weightRecordCount > 1}}">
+            <text>{{rangeLabel}}变化 {{weightChangeLabel}}</text>
           </view>
         </view>
         
-        <view class="chart-container">
+        <view class="chart-container" wx:if="{{weightTrendReady}}">
           <canvas id="weightChart" canvas-id="weightChart" type="2d" class="chart-canvas" bindtouchstart="onChartTouch"></canvas>
           <view class="chart-labels">
             <text wx:for="{{weightLabels}}" wx:key="*this" class="{{item === '今日' ? 'current' : ''}}">{{item}}</text>
           </view>
+        </view>
+        <view class="insufficient-data" wx:else>
+          <text class="insufficient-title">继续记录后可查看趋势</text>
+          <text class="insufficient-desc">当前有 {{weightRecordCount}} 条记录，至少需要 3 条。</text>
         </view>
       </view>
 
@@ -159,28 +192,39 @@
               <text class="history-value">{{item.value}}</text>
               <text class="status-tag">{{item.status}}</text>
             </view>
-            <text class="history-time">{{item.time}} · {{item.note}}</text>
+            <text class="history-time">{{item.time}}{{item.note ? ' · ' + item.note : ''}}</text>
           </view>
-          <text class="arrow">></text>
         </view>
 
         <!-- Weekly Summary Card -->
         <view class="summary-card">
           <view class="summary-icon">📊</view>
           <view class="summary-content">
-            <text class="summary-title">本周趋势简报</text>
+            <text class="summary-title">{{rangeLabel}}趋势简报</text>
             <text class="summary-text">{{trendSummary}}</text>
           </view>
         </view>
+      </view>
+      </block>
+
+      <view class="empty-state" wx:else>
+        <view class="empty-illustration green">kg</view>
+        <text class="empty-title">{{rangeLabel}}还没有体重记录</text>
+        <text class="empty-desc">记录第一次体重；累计 3 条后，这里会开始显示变化趋势。</text>
+        <view class="empty-action green" bindtap="onAddRecord" data-tab="weight">记录体重</view>
       </view>
     </view>
 
     <!-- Symptoms Section -->
     <view class="stats-section" wx:if="{{activeTab === 'symptoms'}}">
+      <block wx:if="{{hasSymptomData}}">
       <view class="chart-card">
         <view class="chart-header">
-          <text class="symptom-chart-title">本周症状频次</text>
-          <text class="stat-label">最近 7 天</text>
+          <view>
+            <text class="symptom-chart-title">身体状态出现天数</text>
+            <text class="data-caption">共记录 {{symptomRecordCount}} 次</text>
+          </view>
+          <text class="stat-label">{{rangeLabel}}</text>
         </view>
         <view class="symptom-tag-cloud">
           <view 
@@ -189,7 +233,7 @@
             class="symptom-stat-tag tag-{{item.color}} {{item.count === 0 ? 'opacity-40' : ''}}"
           >
             <text class="symptom-tag-name">{{item.name}}</text>
-            <text class="symptom-tag-count" wx:if="{{item.count > 0}}">{{item.count}}</text>
+            <text class="symptom-tag-count">{{item.countLabel}}</text>
           </view>
         </view>
       </view>
@@ -197,7 +241,7 @@
       <!-- Symptom History -->
       <view class="history-section">
         <view class="section-header">
-          <text class="section-title">历史症状记录</text>
+          <text class="section-title">身体状态记录</text>
           <!-- <text class="more-btn text-rose">查看全部</text> -->
         </view>
 
@@ -205,7 +249,7 @@
           <view class="card-accent"></view>
           <view class="record-header">
             <text class="record-time">{{item.time}}</text>
-            <text class="severity-tag">{{item.severity}}</text>
+            <text class="severity-tag" wx:if="{{item.severity}}">{{item.severity}}</text>
           </view>
           <view class="record-tags">
             <view class="record-tag-item" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="name">
@@ -213,10 +257,18 @@
               <text class="tag-label">{{tag.name}}</text>
             </view>
           </view>
-          <view class="record-note">
-            <text>“{{item.note}}”</text>
+          <view class="record-note" wx:if="{{item.note}}">
+            <text>{{item.note}}</text>
           </view>
         </view>
+      </view>
+      </block>
+
+      <view class="empty-state" wx:else>
+        <view class="empty-illustration rose">＋</view>
+        <text class="empty-title">{{rangeLabel}}还没有身体状态记录</text>
+        <text class="empty-desc">记录疼痛、发热、疲劳等情况，之后可以按出现天数回顾变化。</text>
+        <view class="empty-action rose" bindtap="onAddRecord" data-tab="symptoms">记录身体状态</view>
       </view>
     </view>
 

@@ -49,6 +49,11 @@
               bindtap="onRelationSelect"
               data-value="spouse"
             >配偶</view>
+            <view
+              class="tag-item {{familyInfo.relation === 'self' ? 'tag-active' : ''}}"
+              bindtap="onRelationSelect"
+              data-value="self"
+            >自己</view>
             <view 
               class="tag-item {{familyInfo.relation === 'other' ? 'tag-active' : ''}}"
               bindtap="onRelationSelect"
@@ -60,7 +65,7 @@
         <!-- 年龄和性别 -->
         <view class="form-row">
           <view class="form-item age-item">
-            <text class="form-label">年龄</text>
+            <text class="form-label">年龄（可选）</text>
             <input 
               class="form-input {{ageFocused ? 'form-input-focus' : ''}}" 
               type="number" 

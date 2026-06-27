@@ -27,6 +27,12 @@ Page({
     this.checkTargetDate();
   },
 
+  onBack() {
+    wx.navigateBack({
+      fail: () => wx.reLaunch({ url: '/pages/home/home' })
+    });
+  },
+
   checkTargetDate() {
     if (app.globalData.targetCalendarDate) {
       const targetDateStr = app.globalData.targetCalendarDate;
@@ -198,7 +204,9 @@ Page({
   loadTasksForDate(dateStr) {
     const { currentFamilyId } = this.data;
     const reminders = DataManager.getRemindersByDate(dateStr);
-    const familyReminders = reminders.filter(r => r.familyId == currentFamilyId);
+    const familyReminders = DataManager.sortRemindersByPriority(
+      reminders.filter(r => r.familyId == currentFamilyId)
+    );
     
     const tasks = familyReminders.map(r => ({
       id: r.id,
@@ -207,7 +215,8 @@ Page({
       icon: r.type.icon,
       iconBg: r.completed ? 'icon-bg-white' : 'icon-bg-sky',
       completed: r.completed,
-      important: r.type.isKey,
+      important: DataManager.isReminderImportant(r),
+      frequency: r.frequency,
       location: r.remark || ''
     }));
 
@@ -258,6 +267,13 @@ Page({
 
   onDeleteTask(e) {
     const taskId = e.currentTarget.dataset.id;
+    const task = this.data.tasks.find(item => item.id === taskId);
+    if (task && this.isRecurringTask(task)) {
+      this.showRecurringDeleteOptions(taskId, this.data.selectedDate);
+      return;
+    }
+    this.confirmDeleteReminder(taskId);
+    return;
     wx.showModal({
       title: '确认删除',
       content: '确定要删除这条提醒吗？',
@@ -278,6 +294,57 @@ Page({
               icon: 'none'
             });
           }
+        }
+      }
+    });
+  },
+
+  isRecurringTask(task) {
+    return task.frequency === 'daily'
+      || task.frequency === 'weekly'
+      || task.frequency === 'custom_weekly';
+  },
+
+  showRecurringDeleteOptions(taskId, date) {
+    wx.showActionSheet({
+      itemList: ['仅隐藏这一天', '删除整个重复提醒'],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          this.hideReminderForDate(taskId, date);
+        }
+        if (res.tapIndex === 1) {
+          this.confirmDeleteReminder(taskId, '这是一个重复提醒，删除后以后也不会再提醒。');
+        }
+      }
+    });
+  },
+
+  hideReminderForDate(taskId, date) {
+    const success = DataManager.hideReminderForDate(taskId, date);
+    if (success) {
+      wx.showToast({ title: '已隐藏这一天', icon: 'success' });
+      this.loadTasksForDate(this.data.selectedDate);
+      this.generateCalendar(this.data.currentYear, this.data.currentMonth);
+    } else {
+      wx.showToast({ title: '操作失败', icon: 'none' });
+    }
+  },
+
+  confirmDeleteReminder(taskId, content = '确定要删除这条提醒吗？') {
+    wx.showModal({
+      title: '确认删除',
+      content,
+      confirmText: '删除',
+      confirmColor: '#ef4444',
+      success: (res) => {
+        if (!res.confirm) return;
+        const success = DataManager.deleteReminder(taskId);
+        if (success) {
+          wx.showToast({ title: '已删除', icon: 'success' });
+          this.loadTasksForDate(this.data.selectedDate);
+          this.generateCalendar(this.data.currentYear, this.data.currentMonth);
+        } else {
+          wx.showToast({ title: '删除失败', icon: 'none' });
         }
       }
     });
@@ -305,10 +372,6 @@ Page({
     }
     this.setData({ currentYear, currentMonth });
     this.generateCalendar(currentYear, currentMonth);
-  },
-
-  goToGreet() {
-    // 默认无效果
   },
 
   onAddClick() {

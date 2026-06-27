@@ -2,6 +2,14 @@ const { DataManager } = require('../../utils/data-manager');
 const app = getApp();
 
 const DEBUG_TREND = false;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+const getRangeStart = (days) => {
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - days + 1);
+  return start;
+};
 
 const safeStringify = (value) => {
   try {
@@ -31,6 +39,20 @@ Page({
     familyMembers: [],
     completionRate: 0,
     activeTab: 'reminders',
+    rangeOptions: [
+      { label: '7日', days: 7 },
+      { label: '30日', days: 30 },
+      { label: '90日', days: 90 }
+    ],
+    selectedRangeDays: 7,
+    rangeLabel: '近7日',
+    hasReminderData: false,
+    hasWeightData: false,
+    hasSymptomData: false,
+    weightTrendReady: false,
+    weightRecordCount: 0,
+    symptomRecordCount: 0,
+    weightChangeLabel: '',
     currentWeight: 0,
     weightDiff: 0,
     history: [],
@@ -53,6 +75,7 @@ Page({
     trendTotalData: [],
     trendDateStrs: [],
     trendSelectedIndex: -1,
+    trendGranularity: '按天',
     trendCanvasW: 0,
     trendCanvasH: 0,
     trendCanvasCssW: 0,
@@ -124,20 +147,18 @@ Page({
 
   loadReminderData(familyId) {
     if (DEBUG_TREND) console.log(`[Records] 开始加载提醒数据 familyId=${safeStringify(familyId)}`);
-    // 获取当前家庭成员的所有提醒
-    const reminders = DataManager.getRemindersByFamilyId(familyId);
-    
-    // 计算近7日趋势和周平均完成率
+    const { selectedRangeDays } = this.data;
+    const rangeLabel = `近${selectedRangeDays}日`;
     const now = new Date();
-    const trendCounts = [];
-    const trendTotalCounts = [];
-    const trendLabels = [];
+    const dailyCompletedCounts = [];
+    const dailyPlannedCounts = [];
+    const fullTrendLabels = [];
     const trendDateStrs = [];
-    let totalWeeklyRate = 0;
-    let daysWithTasks = 0;
+    let periodCompletedTotal = 0;
+    let periodPlannedTotal = 0;
     
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+    for (let i = selectedRangeDays - 1; i >= 0; i--) {
+      const date = new Date(now.getTime() - i * DAY_MS);
       const dateStr = DataManager.formatDate(date);
       trendDateStrs.push(dateStr);
       
@@ -148,36 +169,54 @@ Page({
       if (DEBUG_TREND) console.log(`[Records] 趋势日期=${dateStr} total=${dayReminders.length} done=${dayCompleted}`);
       
       // 记录已完成数量，而不是完成率
-      trendCounts.push(dayCompleted);
-      trendTotalCounts.push(dayTotal);
-      
-      // 计算当天的完成率用于周平均统计
-      if (dayReminders.length > 0) {
-        const dayRate = dayCompleted / dayReminders.length;
-        totalWeeklyRate += dayRate;
-        daysWithTasks++;
-      }
+      dailyCompletedCounts.push(dayCompleted);
+      dailyPlannedCounts.push(dayTotal);
+      periodCompletedTotal += dayCompleted;
+      periodPlannedTotal += dayTotal;
       
       if (i === 0) {
-        trendLabels.push('今日');
+        fullTrendLabels.push('今日');
       } else {
-        trendLabels.push(`${date.getMonth() + 1}.${date.getDate()}`);
+        fullTrendLabels.push(`${date.getMonth() + 1}.${date.getDate()}`);
       }
     }
 
-    // 计算周平均完成率
-    const weeklyCompletionRate = daysWithTasks > 0 ? Math.round((totalWeeklyRate / daysWithTasks) * 100) : 0;
-    
-    // 统计本周总完成任务数
-    let weeklyCompletedTotal = 0;
-    trendCounts.forEach(count => {
-      weeklyCompletedTotal += count;
-    });
+    const completionRate = periodPlannedTotal > 0
+      ? Math.round((periodCompletedTotal / periodPlannedTotal) * 100)
+      : 0;
+    let completionStatus = '本期完成情况';
+    if (periodPlannedTotal > 0 && completionRate >= 90) completionStatus = '绝大部分已完成';
+    else if (periodPlannedTotal > 0 && completionRate >= 60) completionStatus = '多数事项已完成';
+    else if (periodPlannedTotal > 0) completionStatus = '还有事项待确认';
 
-    let completionStatus = '继续加油';
-    if (weeklyCompletionRate >= 90) completionStatus = '完成度极佳';
-    else if (weeklyCompletionRate >= 70) completionStatus = '表现不错';
-    else if (weeklyCompletionRate >= 50) completionStatus = '还需努力';
+    const shortDate = dateStr => {
+      const parts = dateStr.split('-');
+      return `${Number(parts[1])}.${Number(parts[2])}`;
+    };
+    const bucketSize = selectedRangeDays === 7 ? 1 : 7;
+    const trendGroups = [];
+    for (let end = dailyCompletedCounts.length; end > 0; end -= bucketSize) {
+      const start = Math.max(0, end - bucketSize);
+      const startDate = trendDateStrs[start];
+      const endDate = trendDateStrs[end - 1];
+      const completed = dailyCompletedCounts.slice(start, end).reduce((sum, value) => sum + value, 0);
+      const planned = dailyPlannedCounts.slice(start, end).reduce((sum, value) => sum + value, 0);
+      const isToday = endDate === DataManager.formatDate(now);
+      trendGroups.unshift({
+        completed,
+        planned,
+        axisLabel: isToday ? '今日' : shortDate(endDate),
+        rangeLabel: startDate === endDate ? (isToday ? '今日' : shortDate(endDate)) : `${shortDate(startDate)}–${shortDate(endDate)}`
+      });
+    }
+
+    const trendData = trendGroups.map(group => group.completed);
+    const trendTotalData = trendGroups.map(group => group.planned);
+    const trendRangeLabels = trendGroups.map(group => group.rangeLabel);
+    const axisIndexes = trendGroups.length <= 7
+      ? trendGroups.map((_, index) => index)
+      : [0, 1, 2, 3, 4].map(index => Math.round(index * (trendGroups.length - 1) / 4));
+    const trendLabels = axisIndexes.map(index => trendGroups[index].axisLabel);
 
     // 计算近48小时内的待补项
     const missedReminders = [];
@@ -214,19 +253,22 @@ Page({
     });
 
     this.setData({
-      reminderCompletion: weeklyCompletionRate,
-      reminderTotal: reminders.length,
-      weeklyCompletedTotal: weeklyCompletedTotal,
+      reminderCompletion: completionRate,
+      reminderTotal: periodPlannedTotal,
+      weeklyCompletedTotal: periodCompletedTotal,
       completionStatus,
+      hasReminderData: periodPlannedTotal > 0,
+      rangeLabel,
       missedReminders: missedReminders,
       trendLabels: trendLabels,
       trendBadgeValue: '',
       trendSelectedIndex: -1,
-      trendDateStrs: trendDateStrs,
-      trendData: trendCounts,
-      trendTotalData: trendTotalCounts
+      trendDateStrs: trendRangeLabels,
+      trendData,
+      trendTotalData,
+      trendGranularity: bucketSize === 1 ? '按天' : '按7天汇总'
     }, () => {
-      if (DEBUG_TREND) console.log(`[Records] 最终趋势数据 trendCounts=${safeStringify(trendCounts)}`);
+      if (DEBUG_TREND) console.log(`[Records] 最终趋势数据 trendData=${safeStringify(trendData)}`);
       if (typeof wx.nextTick === 'function') {
         wx.nextTick(() => this.drawTrendChart());
       } else {
@@ -240,192 +282,104 @@ Page({
     query.select('.trend-chart-container').boundingClientRect();
     query.exec((res) => {
       const rect = res && res[0] ? res[0] : null;
-      const width = rect && rect.width ? rect.width : 0;
-      const height = rect && rect.height ? rect.height : 0;
-      if (DEBUG_TREND) console.log(`[Records] trendChart 容器尺寸=${safeStringify({ width, height })} rect=${safeStringify(rect)}`);
+      const width = rect && rect.width ? Math.floor(rect.width) : 0;
+      const height = rect && rect.height ? Math.floor(rect.height) : 0;
+      if (!width || !height) return;
 
-      if (!width || !height) {
-        this._trendDrawRetryCount = (this._trendDrawRetryCount || 0) + 1;
-        if (this._trendDrawRetryCount <= 3) {
-          setTimeout(() => this.drawTrendChart(), 60);
-        }
-        return;
-      }
-
-      const cssW = Math.floor(width);
-      const cssH = Math.floor(height);
       this._trendCanvasRect = rect;
-
-      this.setData({
-        trendCanvasCssW: cssW,
-        trendCanvasCssH: cssH,
-        trendCanvasW: 0,
-        trendCanvasH: 0
-      }, () => {
+      this.setData({ trendCanvasCssW: width, trendCanvasCssH: height }, () => {
         const ctx = wx.createCanvasContext('trendChart', this);
         if (!ctx) return;
 
-        const doneData = this.data.trendData;
-        const totalData = this.data.trendTotalData;
-        if (!Array.isArray(doneData) || doneData.length === 0) return;
-        const n = doneData.length;
-        const safeTotalData = Array.isArray(totalData) && totalData.length === n ? totalData : new Array(n).fill(0);
+        const completedData = this.data.trendData || [];
+        const plannedData = this.data.trendTotalData || [];
+        const count = completedData.length;
+        if (!count) return;
 
-        ctx.save();
-        ctx.clearRect(0, 0, cssW, cssH);
+        const padding = { top: 24, bottom: 20, left: 32, right: 12 };
+        const chartW = width - padding.left - padding.right;
+        const chartH = height - padding.top - padding.bottom;
+        const maxVal = Math.max(1, ...plannedData, ...completedData);
+        const slotW = chartW / count;
+        const plannedBarW = Math.max(6, Math.min(18, slotW * 0.56));
+        const completedBarW = Math.max(4, Math.min(12, plannedBarW * 0.62));
 
-        let maxVal = Math.max(...safeTotalData, ...doneData);
-        if (!isFinite(maxVal) || maxVal <= 0) maxVal = 1;
-
-        const padding = { top: 14, bottom: 24, left: 40, right: 16 };
-        const chartW = cssW - padding.left - padding.right;
-        const chartH = cssH - padding.top - padding.bottom;
-        if (chartW <= 0 || chartH <= 0) {
-          ctx.restore();
-          ctx.draw(false);
-          return;
-        }
-
-        const ticks = [maxVal, Math.round(maxVal / 2), 0]
-          .filter((v, i, a) => a.indexOf(v) === i)
-          .sort((a, b) => b - a);
-
+        ctx.clearRect(0, 0, width, height);
         ctx.setFontSize(10);
-        ctx.setTextAlign('left'); // 改为左对齐
+        ctx.setTextAlign('right');
         ctx.setTextBaseline('middle');
         ctx.setFillStyle('#94a3b8');
-
-        ctx.setStrokeStyle('#f1f5f9');
+        ctx.setStrokeStyle('#edf1f5');
         ctx.setLineWidth(1);
-        ctx.setLineDash([4, 4]);
-        ticks.forEach((val) => {
-          const y = padding.top + chartH - (val / maxVal) * chartH;
-          // 辅助线
+
+        const ticks = [maxVal, Math.round(maxVal / 2), 0]
+          .filter((value, index, values) => values.indexOf(value) === index)
+          .sort((a, b) => b - a);
+        ticks.forEach(value => {
+          const y = padding.top + chartH - (value / maxVal) * chartH;
           ctx.beginPath();
           ctx.moveTo(padding.left, y);
           ctx.lineTo(padding.left + chartW, y);
           ctx.stroke();
-          // 刻度文字放在最左侧 (x=0附近)
-          ctx.fillText(String(val), 4, y);
-        });
-        ctx.setLineDash([]);
-
-        const pointsTotal = safeTotalData.map((val, i) => ({
-          x: padding.left + (i / (n - 1 || 1)) * chartW,
-          y: padding.top + chartH - (val / maxVal) * chartH
-        }));
-
-        const pointsDone = doneData.map((val, i) => ({
-          x: padding.left + (i / (n - 1 || 1)) * chartW,
-          y: padding.top + chartH - (val / maxVal) * chartH
-        }));
-
-        this._trendTouchPoints = pointsDone.map((p, i) => ({
-          x: p.x,
-          y: p.y,
-          done: doneData[i] || 0,
-          total: safeTotalData[i] || 0,
-          dateStr: (this.data.trendDateStrs && this.data.trendDateStrs[i]) ? this.data.trendDateStrs[i] : '',
-          label: (this.data.trendLabels && this.data.trendLabels[i]) ? this.data.trendLabels[i] : ''
-        }));
-
-        const gradient = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartH);
-        gradient.addColorStop(0, 'rgba(19, 127, 236, 0.22)');
-        gradient.addColorStop(1, 'rgba(19, 127, 236, 0.02)');
-
-        ctx.beginPath();
-        ctx.moveTo(pointsDone[0].x, pointsDone[0].y);
-        for (let i = 0; i < pointsDone.length - 1; i++) {
-          const cp1x = (pointsDone[i].x + pointsDone[i + 1].x) / 2;
-          ctx.bezierCurveTo(cp1x, pointsDone[i].y, cp1x, pointsDone[i + 1].y, pointsDone[i + 1].x, pointsDone[i + 1].y);
-        }
-        ctx.lineTo(padding.left + chartW, padding.top + chartH);
-        ctx.lineTo(padding.left, padding.top + chartH);
-        ctx.closePath();
-        ctx.setFillStyle(gradient);
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.moveTo(pointsTotal[0].x, pointsTotal[0].y);
-        for (let i = 0; i < pointsTotal.length - 1; i++) {
-          const cp1x = (pointsTotal[i].x + pointsTotal[i + 1].x) / 2;
-          ctx.bezierCurveTo(cp1x, pointsTotal[i].y, cp1x, pointsTotal[i + 1].y, pointsTotal[i + 1].x, pointsTotal[i + 1].y);
-        }
-        ctx.setStrokeStyle('#cbd5e1');
-        ctx.setLineWidth(2);
-        ctx.setLineDash([6, 4]);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        ctx.beginPath();
-        ctx.moveTo(pointsDone[0].x, pointsDone[0].y);
-        for (let i = 0; i < pointsDone.length - 1; i++) {
-          const cp1x = (pointsDone[i].x + pointsDone[i + 1].x) / 2;
-          ctx.bezierCurveTo(cp1x, pointsDone[i].y, cp1x, pointsDone[i + 1].y, pointsDone[i + 1].x, pointsDone[i + 1].y);
-        }
-        ctx.setStrokeStyle('#137fec');
-        ctx.setLineWidth(3);
-        ctx.setLineCap('round');
-        ctx.setLineJoin('round');
-        ctx.stroke();
-
-        pointsTotal.forEach((p) => {
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
-          ctx.setFillStyle('#e2e8f0');
-          ctx.fill();
+          ctx.fillText(String(value), padding.left - 7, y);
         });
 
-        pointsDone.forEach((p) => {
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
-          ctx.setFillStyle('#ffffff');
-          ctx.fill();
-          ctx.setStrokeStyle('#137fec');
-          ctx.setLineWidth(2);
-          ctx.stroke();
+        this._trendTouchBars = completedData.map((completed, index) => {
+          const planned = plannedData[index] || 0;
+          const centerX = padding.left + slotW * (index + 0.5);
+          const baseline = padding.top + chartH;
+          const plannedH = (planned / maxVal) * chartH;
+          const completedH = (completed / maxVal) * chartH;
+
+          if (planned > 0) {
+            ctx.setFillStyle('#d9e0e8');
+            ctx.fillRect(centerX - plannedBarW / 2, baseline - plannedH, plannedBarW, plannedH);
+          } else {
+            ctx.setStrokeStyle('#cbd5e1');
+            ctx.setLineWidth(2);
+            ctx.beginPath();
+            ctx.moveTo(centerX - plannedBarW / 2, baseline - 1);
+            ctx.lineTo(centerX + plannedBarW / 2, baseline - 1);
+            ctx.stroke();
+          }
+
+          if (completed > 0) {
+            ctx.setFillStyle('#137fec');
+            ctx.fillRect(centerX - completedBarW / 2, baseline - completedH, completedBarW, completedH);
+          }
+
+          if (this.data.trendSelectedIndex === index) {
+            ctx.setStrokeStyle('#0f6dce');
+            ctx.setLineWidth(2);
+            ctx.strokeRect(centerX - plannedBarW / 2 - 3, padding.top - 4, plannedBarW + 6, chartH + 8);
+          }
+
+          return {
+            x: centerX,
+            hitWidth: Math.max(20, slotW),
+            completed,
+            planned,
+            label: this.data.trendDateStrs[index] || ''
+          };
         });
 
         const selectedIndex = this.data.trendSelectedIndex;
-        if (selectedIndex >= 0 && selectedIndex < pointsDone.length) {
-          const p = pointsDone[selectedIndex];
-          const done = doneData[selectedIndex] || 0;
-          const total = safeTotalData[selectedIndex] || 0;
-          const dateStr = (this.data.trendDateStrs && this.data.trendDateStrs[selectedIndex]) ? this.data.trendDateStrs[selectedIndex] : '';
-          const tooltipText = `${dateStr} 完成 ${done}/${total}`;
-
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, 7, 0, Math.PI * 2);
-          ctx.setFillStyle('#137fec');
-          ctx.fill();
-          ctx.setStrokeStyle('#ffffff');
-          ctx.setLineWidth(2);
-          ctx.stroke();
-
-          const boxPadX = 8;
-          const textW = tooltipText.length * 7;
-          const boxW = textW + boxPadX * 2;
-          const boxH = 24;
-          let boxX = p.x - boxW / 2;
-          let boxY = p.y - 34;
-          if (boxX < 4) boxX = 4;
-          if (boxX + boxW > cssW - 4) boxX = cssW - 4 - boxW;
-          if (boxY < 4) boxY = p.y + 12;
-
+        if (selectedIndex >= 0 && selectedIndex < this._trendTouchBars.length) {
+          const selected = this._trendTouchBars[selectedIndex];
+          const tooltip = `${selected.label}  完成 ${selected.completed}/${selected.planned}`;
+          const boxW = Math.min(width - 16, Math.max(112, tooltip.length * 7 + 18));
+          const boxX = Math.max(8, Math.min(width - boxW - 8, selected.x - boxW / 2));
           ctx.setFillStyle('#ffffff');
-          ctx.setStrokeStyle('#e2e8f0');
+          ctx.setStrokeStyle('#dfe6ee');
           ctx.setLineWidth(1);
-          ctx.fillRect(boxX, boxY, boxW, boxH);
-          ctx.strokeRect(boxX, boxY, boxW, boxH);
-
+          ctx.fillRect(boxX, 2, boxW, 24);
+          ctx.strokeRect(boxX, 2, boxW, 24);
           ctx.setFillStyle('#334155');
           ctx.setFontSize(10);
           ctx.setTextAlign('center');
-          ctx.setTextBaseline('middle');
-          ctx.fillText(tooltipText, boxX + boxW / 2, boxY + boxH / 2);
+          ctx.fillText(tooltip, boxX + boxW / 2, 14);
         }
 
-        ctx.restore();
         ctx.draw(false);
       });
     });
@@ -433,49 +387,32 @@ Page({
 
   onTrendTouch(e) {
     const touch = e && e.touches && e.touches[0] ? e.touches[0] : null;
-    if (!touch || !this._trendTouchPoints || this._trendTouchPoints.length === 0) return;
+    if (!touch || !this._trendTouchBars || this._trendTouchBars.length === 0) return;
 
     let localX = touch.x;
-    let localY = touch.y;
-
-    if ((localX === undefined || localY === undefined) && this._trendCanvasRect) {
-      if (touch.clientX !== undefined && touch.clientY !== undefined) {
-        localX = touch.clientX - this._trendCanvasRect.left;
-        localY = touch.clientY - this._trendCanvasRect.top;
-      } else if (touch.pageX !== undefined && touch.pageY !== undefined) {
-        localX = touch.pageX - this._trendCanvasRect.left;
-        localY = touch.pageY - this._trendCanvasRect.top;
-      }
+    if (localX === undefined && this._trendCanvasRect) {
+      if (touch.clientX !== undefined) localX = touch.clientX - this._trendCanvasRect.left;
+      else if (touch.pageX !== undefined) localX = touch.pageX - this._trendCanvasRect.left;
     }
-
-    if (localX === undefined || localY === undefined) return;
+    if (localX === undefined) return;
 
     let bestIndex = -1;
-    let bestDist = 999999;
-    this._trendTouchPoints.forEach((p, i) => {
-      const dx = p.x - localX;
-      const dy = p.y - localY;
-      const d2 = dx * dx + dy * dy;
-      if (d2 < bestDist) {
-        bestDist = d2;
-        bestIndex = i;
+    let bestDistance = Infinity;
+    this._trendTouchBars.forEach((bar, index) => {
+      const distance = Math.abs(bar.x - localX);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        bestIndex = index;
       }
     });
 
-    if (bestIndex === -1) return;
-    if (bestDist > 28 * 28) return;
-
-    const current = this.data.trendSelectedIndex;
-    const nextIndex = current === bestIndex ? -1 : bestIndex;
-
-    if (nextIndex === -1) {
-      this.setData({ trendSelectedIndex: -1, trendBadgeValue: '' }, () => this.drawTrendChart());
-      return;
-    }
-
-    const p = this._trendTouchPoints[nextIndex];
-    const badge = `${p.done}/${p.total}`;
-    this.setData({ trendSelectedIndex: nextIndex, trendBadgeValue: badge }, () => this.drawTrendChart());
+    if (bestIndex < 0 || bestDistance > this._trendTouchBars[bestIndex].hitWidth / 2) return;
+    const nextIndex = this.data.trendSelectedIndex === bestIndex ? -1 : bestIndex;
+    const selected = nextIndex >= 0 ? this._trendTouchBars[nextIndex] : null;
+    this.setData({
+      trendSelectedIndex: nextIndex,
+      trendBadgeValue: selected ? `${selected.completed}/${selected.planned}` : ''
+    }, () => this.drawTrendChart());
   },
 
   onRetryTask() {
@@ -492,31 +429,43 @@ Page({
     // 先设置全局变量，再执行跳转
     app.globalData.targetCalendarDate = earliestDate;
     
-    wx.reLaunch({
+    wx.navigateTo({
       url: '/pages/calendar/calendar'
     });
   },
 
   loadWeightData(familyId) {
-    const weightRecords = DataManager.getWeightRecords(familyId, 7);
+    const { selectedRangeDays } = this.data;
+    const start = getRangeStart(selectedRangeDays);
+    const weightRecords = DataManager.getHealthRecordsByFamilyId(familyId)
+      .filter(record => record.type === 'weight' && new Date(record.recordTime) >= start)
+      .sort((a, b) => new Date(a.recordTime) - new Date(b.recordTime));
     
     if (weightRecords.length === 0) {
       this.setData({
-        currentWeight: 0,
+        currentWeight: null,
         weightDiff: 0,
+        weightChangeLabel: '',
         history: [],
         chartData: [],
         weightLabels: [],
-        trendSummary: '暂无体重记录'
+        trendSummary: '',
+        hasWeightData: false,
+        weightTrendReady: false,
+        weightRecordCount: 0,
+        rangeLabel: `近${selectedRangeDays}日`
       });
       return;
     }
 
     const latestRecord = weightRecords[weightRecords.length - 1];
-    const previousRecord = weightRecords.length > 1 ? weightRecords[weightRecords.length - 2] : null;
-    const weightDiff = previousRecord ? (latestRecord.weight - previousRecord.weight).toFixed(1) : 0;
+    const firstRecord = weightRecords[0];
+    const weightDiff = weightRecords.length > 1 ? latestRecord.weight - firstRecord.weight : 0;
+    const weightChangeLabel = weightRecords.length > 1
+      ? `${weightDiff > 0 ? '+' : ''}${weightDiff.toFixed(1)}kg`
+      : '';
 
-    const history = weightRecords.map(r => ({
+    const history = weightRecords.slice().reverse().map(r => ({
       id: r.id,
       value: `${r.weight} kg`,
       status: r.weightDiff > 0 ? '上升' : r.weightDiff < 0 ? '下降' : '平稳',
@@ -525,33 +474,51 @@ Page({
     }));
 
     const chartData = weightRecords.map(r => r.weight);
-    const weightLabels = weightRecords.map(r => {
+    const fullWeightLabels = weightRecords.map(r => {
       const date = new Date(r.recordTime);
       return `${date.getMonth() + 1}.${date.getDate()}`;
     });
+    const weightLabelIndexes = fullWeightLabels.length <= 7
+      ? fullWeightLabels.map((_, index) => index)
+      : [0, 1, 2, 3, 4, 5, 6].map(index => Math.round(index * (fullWeightLabels.length - 1) / 6));
+    const weightLabels = weightLabelIndexes.map(index => fullWeightLabels[index]);
 
     const avgWeight = chartData.reduce((a, b) => a + b, 0) / chartData.length;
-    const trendSummary = `平均体重 ${avgWeight.toFixed(1)}kg，${weightDiff > 0 ? '较上次上升' : weightDiff < 0 ? '较上次下降' : '保持平稳'} ${Math.abs(weightDiff)}kg`;
+    const trendSummary = weightRecords.length < 3
+      ? `本周期已记录 ${weightRecords.length} 次，至少记录 3 次后再观察趋势。`
+      : `本周期记录 ${weightRecords.length} 次，平均 ${avgWeight.toFixed(1)}kg，整体变化 ${weightChangeLabel}。`;
 
     this.setData({
       currentWeight: latestRecord.weight,
-      weightDiff: weightDiff,
+      weightDiff,
+      weightChangeLabel,
       history,
       chartData,
       weightLabels,
       trendSummary,
+      hasWeightData: true,
+      weightTrendReady: weightRecords.length >= 3,
+      weightRecordCount: weightRecords.length,
+      rangeLabel: `近${selectedRangeDays}日`,
       completionRate: Math.min(100, weightRecords.length * 15)
     });
   },
 
   loadSymptomData(familyId) {
-    const symptomRecords = DataManager.getSymptomRecords(familyId, 10);
+    const { selectedRangeDays } = this.data;
+    const start = getRangeStart(selectedRangeDays);
+    const symptomRecords = DataManager.getHealthRecordsByFamilyId(familyId)
+      .filter(record => record.type === 'symptoms' && new Date(record.recordTime) >= start)
+      .sort((a, b) => new Date(b.recordTime) - new Date(a.recordTime));
     
     if (symptomRecords.length === 0) {
       this.setData({
         symptomStats: [],
         symptomHistory: [],
-        symptomCompletion: 0
+        symptomCompletion: 0,
+        hasSymptomData: false,
+        symptomRecordCount: 0,
+        rangeLabel: `近${selectedRangeDays}日`
       });
       return;
     }
@@ -559,23 +526,28 @@ Page({
     const symptomCounts = {};
     symptomRecords.forEach(r => {
       r.symptoms.forEach(s => {
-        symptomCounts[s.name] = (symptomCounts[s.name] || 0) + 1;
+        if (!symptomCounts[s.name]) symptomCounts[s.name] = { count: 0, dates: {} };
+        symptomCounts[s.name].count++;
+        symptomCounts[s.name].dates[DataManager.formatDate(r.recordTime)] = true;
       });
     });
 
-    const symptomStats = Object.entries(symptomCounts).map(([name, count]) => {
+    const symptomStats = Object.entries(symptomCounts).map(([name, stats]) => {
       const symptomDef = this.getSymptomDef(name);
+      const dayCount = Object.keys(stats.dates).length;
       return {
         name,
-        count,
+        count: stats.count,
+        dayCount,
+        countLabel: `${dayCount}天`,
         color: symptomDef ? symptomDef.color : 'slate'
       };
-    });
+    }).sort((a, b) => b.dayCount - a.dayCount || b.count - a.count);
 
     const symptomHistory = symptomRecords.map(r => ({
       id: r.id,
       time: DataManager.formatDateTime(r.recordTime),
-      severity: r.severity || '轻度',
+      severity: r.severity || '',
       tags: r.symptoms.map(s => {
         const symptomDef = this.getSymptomDef(s.name);
         return {
@@ -589,17 +561,23 @@ Page({
 
     this.setData({
       symptomStats,
-      symptomHistory,
-      symptomCompletion: Math.min(100, symptomRecords.length * 10)
+      symptomHistory: symptomHistory.slice(0, 20),
+      symptomCompletion: Math.min(100, symptomRecords.length * 10),
+      hasSymptomData: true,
+      symptomRecordCount: symptomRecords.length,
+      rangeLabel: `近${selectedRangeDays}日`
     });
   },
 
   getSymptomDef(name) {
     const symptoms = [
+      { name: '腹泻', icon: '🚽', color: 'orange' },
+      { name: '声音嘶哑', icon: '🗣️', color: 'purple' },
       { name: '疼痛', icon: '🤕', color: 'rose' },
       { name: '恶心', icon: '🤢', color: 'orange' },
       { name: '疲劳', icon: '😫', color: 'blue' },
       { name: '发热', icon: '🤒', color: 'red' },
+      { name: '感冒', icon: '🤧', color: 'blue' },
       { name: '头晕', icon: '😵', color: 'purple' }
     ];
     return symptoms.find(s => s.name === name);
@@ -785,15 +763,36 @@ Page({
     });
   },
 
+  onRangeChange(e) {
+    const days = Number(e.currentTarget.dataset.days);
+    if (!days || days === this.data.selectedRangeDays) return;
+
+    this.setData({
+      selectedRangeDays: days,
+      rangeLabel: `近${days}日`,
+      selectedIndex: -1,
+      trendSelectedIndex: -1
+    }, () => {
+      this.loadData();
+      if (this.data.activeTab === 'weight') {
+        wx.nextTick(() => this.drawWeightChart());
+      } else if (this.data.activeTab === 'reminders') {
+        wx.nextTick(() => this.drawTrendChart());
+      }
+    });
+  },
+
   onAddMember() {
     wx.navigateTo({
       url: '/pages/addFamily/addFamily'
     });
   },
 
-  onAddRecord() {
-    wx.navigateTo({
-      url: '/pages/addRecord/addRecord'
-    });
+  onAddRecord(e) {
+    const tab = e && e.currentTarget ? e.currentTarget.dataset.tab : this.data.activeTab;
+    const url = tab === 'reminders'
+      ? '/pages/addReminder/addReminder'
+      : `/pages/addRecord/addRecord?tab=${tab === 'symptoms' ? 'symptoms' : 'weight'}`;
+    wx.navigateTo({ url });
   }
 });

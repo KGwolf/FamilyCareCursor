@@ -26,6 +26,10 @@ Component({
       type: Boolean,
       value: true
     },
+    customBack: {
+      type: Boolean,
+      value: false
+    },
     loading: {
       type: Boolean,
       value: false
@@ -106,7 +110,7 @@ Component({
     },
     back() {
       const data = this.data
-      if (data.delta) {
+      if (!this.properties.customBack && data.delta) {
         wx.navigateBack({
           delta: data.delta
         })

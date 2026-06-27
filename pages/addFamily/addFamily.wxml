@@ -48,7 +48,7 @@
     <view class="form-group">
       <view class="form-label">
         <view class="label-indicator"></view>
-        <text class="label-text">年龄</text>
+        <text class="label-text">年龄（可选）</text>
       </view>
       <view class="age-input-wrapper">
         <input 

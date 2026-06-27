@@ -1,4 +1,5 @@
 const { DataManager } = require('../../utils/data-manager');
+const NotificationService = require('../../utils/notification-service');
 const app = getApp();
 
 Page({
@@ -14,7 +15,10 @@ Page({
     tasks: [],
     completedTasks: 0,
     totalTasks: 0,
-    progressPercent: 0
+    progressPercent: 0,
+    hiddenTasksCount: 0,
+    upcomingItems: [],
+    recentChanges: []
   },
 
   onLoad(options) {
@@ -59,9 +63,68 @@ Page({
     this.setData({
       familyMembers,
       currentPatient
+    }, () => {
+      this.loadTodayTasks();
+      this.loadCareOverview();
+      this.maybePromptSubscriptionRenewal();
+    });
+  },
+
+  maybePromptSubscriptionRenewal() {
+    if (this.subscriptionRenewalChecking) return;
+    this.subscriptionRenewalChecking = true;
+    NotificationService.maybePromptSubscriptionRenewal()
+      .catch(error => {
+        console.error('订阅消息续授权检查失败', error);
+      })
+      .finally(() => {
+        this.subscriptionRenewalChecking = false;
+      });
+  },
+
+  loadCareOverview() {
+    const familyId = this.data.currentPatient.id;
+    const today = DataManager.formatDate(new Date());
+    const upcoming = DataManager.getRemindersByFamilyId(familyId)
+      .filter(item => item.type && item.frequency === 'custom' && item.date && item.date > today)
+      .sort((a, b) => `${a.date} ${a.time || ''}`.localeCompare(`${b.date} ${b.time || ''}`))
+      .slice(0, 3);
+
+    const upcomingItems = upcoming.map(item => {
+      const targetDate = DataManager.parseLocalDate(item.date);
+      const month = targetDate.getMonth() + 1;
+      const day = targetDate.getDate();
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const isTomorrow = DataManager.formatDate(tomorrow) === item.date;
+      return {
+        id: item.id,
+        title: item.type.name,
+        date: item.date,
+        time: item.time,
+        icon: item.type.icon,
+        remark: item.remark || '',
+        dateLabel: isTomorrow ? '明天' : `${month}月${day}日`
+      };
     });
 
-    this.loadTodayTasks();
+    const recentChanges = DataManager.getHealthRecordsByFamilyId(familyId)
+      .slice()
+      .sort((a, b) => new Date(b.recordTime) - new Date(a.recordTime))
+      .slice(0, 3)
+      .map(record => ({
+        id: record.id,
+        icon: record.type === 'weight' ? '⚖️' : '●',
+        title: record.type === 'weight'
+          ? `体重 ${record.weight}kg`
+          : record.symptoms.map(item => item.name).join('、'),
+        time: DataManager.formatDateTime(record.recordTime),
+        note: record.type === 'weight' && record.weightDiff
+          ? `较上次 ${record.weightDiff > 0 ? '+' : ''}${record.weightDiff}kg`
+          : (record.note || '')
+      }));
+
+    this.setData({ upcomingItems, recentChanges });
   },
 
   loadTodayTasks() {
@@ -69,7 +132,9 @@ Page({
     const todayStr = DataManager.formatDate(new Date());
     const reminders = DataManager.getRemindersByDate(todayStr);
     
-    const familyReminders = reminders.filter(r => r.familyId === currentPatient.id);
+    const familyReminders = DataManager.sortRemindersByPriority(
+      reminders.filter(r => r.familyId === currentPatient.id)
+    );
     
     const tasks = familyReminders.map(r => ({
       id: r.id,
@@ -78,19 +143,22 @@ Page({
       icon: r.type.icon,
       iconBg: r.completed ? 'icon-bg-white' : 'icon-bg-sky',
       completed: r.completed,
-      important: r.type.isKey,
+      important: DataManager.isReminderImportant(r),
+      frequency: r.frequency,
       location: r.remark || ''
     }));
 
     const completedTasks = tasks.filter(task => task.completed).length;
     const totalTasks = tasks.length;
     const progressPercent = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+    const hiddenTasksCount = Math.max(totalTasks - 3, 0);
 
     this.setData({
       tasks,
       completedTasks,
       totalTasks,
-      progressPercent
+      progressPercent,
+      hiddenTasksCount
     });
   },
 
@@ -129,6 +197,7 @@ Page({
           });
           app.setCurrentFamily(selected.id);
           this.loadTodayTasks();
+          this.loadCareOverview();
           wx.showToast({
             title: `已切换到 ${selected.name}`,
             icon: 'none'
@@ -144,11 +213,24 @@ Page({
     });
   },
 
-  onNotification() {
-    wx.showToast({
-      title: '暂无新通知',
-      icon: 'none'
-    });
+  onOpenSettings() {
+    wx.navigateTo({ url: '/pages/settings/settings' });
+  },
+
+  onQuickAction(e) {
+    const action = e.currentTarget.dataset.action;
+    const routes = {
+      item: '/pages/addReminder/addReminder',
+      symptoms: '/pages/addRecord/addRecord?tab=symptoms',
+      weight: '/pages/addRecord/addRecord?tab=weight'
+    };
+    if (routes[action]) wx.navigateTo({ url: routes[action] });
+  },
+
+  onOpenCalendar(e) {
+    const targetDate = e && e.currentTarget ? e.currentTarget.dataset.date : '';
+    app.globalData.targetCalendarDate = targetDate || DataManager.formatDate(new Date());
+    wx.navigateTo({ url: '/pages/calendar/calendar' });
   },
 
   onTabChange(e) {
@@ -217,6 +299,13 @@ Page({
 
   onDeleteTask(e) {
     const taskId = e.currentTarget.dataset.id;
+    const task = this.data.tasks.find(item => item.id === taskId);
+    if (task && this.isRecurringTask(task)) {
+      this.showRecurringDeleteOptions(taskId, DataManager.formatDate(new Date()));
+      return;
+    }
+    this.confirmDeleteReminder(taskId);
+    return;
     wx.showModal({
       title: '确认删除',
       content: '确定要删除这条提醒吗？',
@@ -241,18 +330,58 @@ Page({
     });
   },
 
-  onViewTips() {
+  isRecurringTask(task) {
+    return task.frequency === 'daily'
+      || task.frequency === 'weekly'
+      || task.frequency === 'custom_weekly';
+  },
+
+  showRecurringDeleteOptions(taskId, date) {
+    wx.showActionSheet({
+      itemList: ['仅隐藏今天', '删除整个重复提醒'],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          this.hideReminderForDate(taskId, date);
+        }
+        if (res.tapIndex === 1) {
+          this.confirmDeleteReminder(taskId, '这是一个重复提醒，删除后以后也不会再提醒。');
+        }
+      }
+    });
+  },
+
+  hideReminderForDate(taskId, date) {
+    const success = DataManager.hideReminderForDate(taskId, date);
+    if (success) {
+      wx.showToast({ title: '已隐藏今天', icon: 'success' });
+      this.loadTodayTasks();
+    } else {
+      wx.showToast({ title: '操作失败', icon: 'none' });
+    }
+  },
+
+  confirmDeleteReminder(taskId, content = '确定要删除这条提醒吗？') {
     wx.showModal({
-      title: '心情小贴士',
-      content: '记得每天给自己15分钟的独处时间，听听音乐、散散步，或者只是静静地喝杯茶。您的身心健康同样重要！',
-      showCancel: false,
-      confirmText: '我知道了'
+      title: '确认删除',
+      content,
+      confirmText: '删除',
+      confirmColor: '#ef4444',
+      success: (res) => {
+        if (!res.confirm) return;
+        const success = DataManager.deleteReminder(taskId);
+        if (success) {
+          wx.showToast({ title: '已删除', icon: 'success' });
+          this.loadTodayTasks();
+        } else {
+          wx.showToast({ title: '删除失败', icon: 'none' });
+        }
+      }
     });
   },
 
   onShareAppMessage() {
     return {
-      title: '家庭照护助手',
+      title: '家人照护记',
       path: '/pages/home/home'
     };
   }

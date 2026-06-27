@@ -1,4 +1,4 @@
-<navigation-bar id="navigationBar" title="新建提醒" color="black" background="#F8FAFC"></navigation-bar>
+<navigation-bar id="navigationBar" title="{{pageTitle}}" color="black" background="#F8FAFC" custom-back="{{true}}" bindback="onBack"></navigation-bar>
 
 <view class="page-container">
   <scroll-view class="main-content" scroll-y="true">
@@ -21,9 +21,9 @@
       </view>
     </view>
 
-    <!-- 提醒类型 -->
+    <!-- 事项类型 -->
     <view class="form-group">
-      <label class="group-label">提醒类型</label>
+      <label class="group-label">事项类型</label>
       <view class="input-wrapper">
         <text class="material-icons input-icon">{{reminderTypes[selectedTypeIndex].icon}}</text>
         <picker bindchange="onSelectType" value="{{selectedTypeIndex}}" range="{{reminderTypes}}" range-key="name" class="full-picker" confirm-color="#2F80ED">
@@ -36,7 +36,7 @@
 
     <!-- 时间与周期 -->
     <view class="form-group">
-      <text class="group-sublabel">时间与周期</text>
+      <text class="group-sublabel">日期与时间</text>
       <view class="time-grid">
         <picker mode="time" value="{{selectedTime}}" bindchange="onTimeChange" class="time-card-wrapper" confirm-color="#2F80ED">
           <view class="card time-card">
@@ -61,7 +61,7 @@
           <text class="card-tag">重复频率</text>
           <view class="card-value">
             <text class="material-icons primary-text">event_repeat</text>
-            <text>{{frequencyOptions[selectedFreqIndex].name}}一次</text>
+            <text>{{frequencyOptions[selectedFreqIndex].name}}</text>
           </view>
         </view>
       </view>
@@ -79,12 +79,20 @@
       </view>
     </view>
 
+    <view class="card important-setting">
+      <view class="important-copy">
+        <text class="important-title">标记为重要</text>
+        <text class="important-desc">未完成的重要事项会优先显示，方便及时关注</text>
+      </view>
+      <switch checked="{{isImportant}}" bindchange="onImportantChange" color="#2F80ED" />
+    </view>
+
     <!-- 备注信息 -->
     <view class="form-group">
       <label class="group-label">备注信息 (可选)</label>
       <textarea 
         class="inp remark-textarea"
-        placeholder="例如：饭后半小时服用..."
+        placeholder="例如：医院、科室、服用方式或需要携带的资料..."
         value="{{remark}}"
         bindinput="onRemarkInput"
         maxlength="200"
@@ -95,9 +103,9 @@
 
   <!-- Footer -->
   <view class="footer-bar">
-    <button class="confirm-btn" bindtap="onSubmit">
+    <button class="confirm-btn {{isSubmitting ? 'is-disabled' : ''}}" bindtap="onSubmit" disabled="{{isSubmitting}}">
       <text class="material-icons">check_circle</text>
-      确认添加提醒
+      保存事项
     </button>
   </view>
 </view>

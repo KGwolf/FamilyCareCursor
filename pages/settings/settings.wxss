@@ -185,9 +185,51 @@
   gap: 24rpx;
 }
 
+.item-copy {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
 .item-text {
   font-size: 28rpx;
   font-weight: 500;
+}
+
+.item-desc {
+  font-size: 22rpx;
+  color: #9ca3af;
+  line-height: 1.4;
+}
+
+.compact-row {
+  justify-content: space-between;
+}
+
+.picker-value {
+  color: #2F80ED;
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.limit-input {
+  width: 120rpx;
+  text-align: right;
+  color: #2F80ED;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.privacy-note {
+  padding: 0 12rpx;
+  color: #6b7280;
+  font-size: 22rpx;
+  line-height: 1.6;
+}
+
+.danger-container {
+  margin-top: 4rpx;
 }
 
 .icon-orange {

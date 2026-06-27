@@ -32,7 +32,7 @@ Page({
           id: familyInfo.id,
           name: familyInfo.name,
           relation: familyInfo.relation,
-          age: familyInfo.age.toString(),
+          age: familyInfo.age == null ? '' : familyInfo.age.toString(),
           gender: familyInfo.gender || 'male',
           avatar: familyInfo.avatar,
           remark: familyInfo.remark || ''
@@ -141,16 +141,8 @@ Page({
       return;
     }
     
-    if (!familyInfo.age) {
-      wx.showToast({
-        title: '请输入年龄',
-        icon: 'none'
-      });
-      return;
-    }
-    
-    const ageNum = parseInt(familyInfo.age);
-    if (isNaN(ageNum) || ageNum < 0 || ageNum > 150) {
+    const ageNum = familyInfo.age === '' ? null : parseInt(familyInfo.age);
+    if (ageNum !== null && (isNaN(ageNum) || ageNum < 0 || ageNum > 150)) {
       wx.showToast({
         title: '请输入有效年龄',
         icon: 'none'
@@ -233,6 +225,7 @@ Page({
     const labels = {
       'father': '父亲',
       'mother': '母亲',
+      'self': '自己',
       'spouse': '配偶',
       'other': '其他'
     };

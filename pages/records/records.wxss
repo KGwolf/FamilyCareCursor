@@ -181,6 +181,55 @@
   box-shadow: 0 2rpx 4rpx rgba(0,0,0,0.05);
 }
 
+/* Period filter and primary action */
+.range-toolbar {
+  margin: -12rpx 32rpx 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.range-options {
+  display: flex;
+  align-items: center;
+  padding: 6rpx;
+  border-radius: 18rpx;
+  background: #e9edf3;
+}
+
+.range-option {
+  min-width: 76rpx;
+  box-sizing: border-box;
+  padding: 10rpx 18rpx;
+  border-radius: 14rpx;
+  color: #7b8798;
+  font-size: 21rpx;
+  font-weight: 650;
+  text-align: center;
+}
+
+.range-option.active {
+  background: #ffffff;
+  color: #137fec;
+  box-shadow: 0 2rpx 8rpx rgba(15, 23, 42, 0.08);
+}
+
+.record-action {
+  flex-shrink: 0;
+  padding: 14rpx 22rpx;
+  border-radius: 18rpx;
+  background: #137fec;
+  color: #ffffff;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.record-action:active,
+.empty-action:active {
+  transform: scale(0.97);
+}
+
 /* Symptoms Specific */
 .symptom-card {
   background: linear-gradient(135deg, #fff1f2, #fff7ed);
@@ -400,6 +449,36 @@
 .trend-tag.down {
   background: #f0fdf4;
   color: #16a34a;
+}
+
+.trend-tag.neutral {
+  background: #eef5ff;
+  color: #35689f;
+}
+
+.insufficient-data {
+  min-height: 176rpx;
+  box-sizing: border-box;
+  padding: 32rpx;
+  border-radius: 24rpx;
+  background: #f7f9fc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.insufficient-title {
+  color: #334155;
+  font-size: 25rpx;
+  font-weight: 700;
+}
+
+.insufficient-desc {
+  margin-top: 10rpx;
+  color: #8b96a7;
+  font-size: 21rpx;
 }
 
 .chart-container {
@@ -752,8 +831,36 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 48rpx;
+  margin-bottom: 20rpx;
 }
+
+.trend-legend {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  color: #7c8798;
+  font-size: 19rpx;
+  white-space: nowrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.legend-item text { white-space: nowrap; }
+
+.legend-dot {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+}
+
+.legend-dot.done { background: #137fec; }
+.legend-dot.planned { background: #cbd5e1; }
 
 .trend-title-row {
   display: flex;
@@ -936,6 +1043,93 @@
   color: #94a3b8;
   margin-top: 4rpx;
   display: block;
+}
+
+.all-clear-card {
+  padding: 28rpx 32rpx;
+  border: 2rpx solid #e5f3ea;
+  border-radius: 28rpx;
+  background: #f6fbf8;
+  display: flex;
+  flex-direction: column;
+}
+
+.all-clear-title {
+  color: #26734a;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.all-clear-desc {
+  margin-top: 8rpx;
+  color: #789184;
+  font-size: 20rpx;
+}
+
+/* Data-aware empty state */
+.empty-state {
+  min-height: 500rpx;
+  box-sizing: border-box;
+  padding: 72rpx 48rpx;
+  border: 2rpx solid #eef1f5;
+  border-radius: 36rpx;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.empty-illustration {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 34rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eaf3ff;
+  color: #137fec;
+  font-size: 42rpx;
+  font-weight: 800;
+}
+
+.empty-illustration.green { background: #eaf8f0; color: #168a50; font-size: 28rpx; }
+.empty-illustration.rose { background: #fff0f3; color: #e34f6f; }
+
+.empty-title {
+  margin-top: 30rpx;
+  color: #1f2b3d;
+  font-size: 30rpx;
+  font-weight: 750;
+}
+
+.empty-desc {
+  max-width: 520rpx;
+  margin-top: 14rpx;
+  color: #7e8999;
+  font-size: 23rpx;
+  line-height: 1.65;
+}
+
+.empty-action {
+  margin-top: 32rpx;
+  padding: 18rpx 34rpx;
+  border-radius: 22rpx;
+  background: #137fec;
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.empty-action.green { background: #168a50; }
+.empty-action.rose { background: #df5974; }
+
+.data-caption {
+  display: block;
+  margin-top: 8rpx;
+  color: #8b96a7;
+  font-size: 20rpx;
 }
 
 .more-icon {

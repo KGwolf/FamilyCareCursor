@@ -1,6 +1,6 @@
 <!-- pages/calendar/calendar.wxml -->
 <view class="calendar-page {{darkMode ? 'dark' : ''}}">
-  <navigation-bar id="navigationBar" title="日程安排" color="black" background="#f6f7f8" back="{{false}}">
+  <navigation-bar id="navigationBar" title="全部安排" color="black" background="#f6f7f8" back="{{true}}" custom-back="{{true}}" bindback="onBack">
     <!-- <view slot="left" class="nav-left">
       <text class="material-icons">account_circle</text>
     </view>
@@ -74,15 +74,15 @@
       <view class="tasks-list">
         <block wx:for="{{tasks}}" wx:key="id">
           <view class="task-card {{item.completed ? 'task-completed' : ''}} {{item.important ? 'task-important' : ''}}" bindtap="onTaskTap" data-id="{{item.id}}">
-            <!-- Important Badge -->
-            <view class="important-badge" wx:if="{{item.important && !item.completed}}">重点关注</view>
-            
             <view class="task-icon-wrapper {{item.completed ? 'icon-completed' : ''}} {{item.iconBg}}">
               <text class="task-icon material-icons">{{item.icon}}</text>
             </view>
             
             <view class="task-content">
-              <text class="task-title {{item.completed ? 'title-completed' : ''}}">{{item.time}} - {{item.title}}</text>
+              <view class="task-title-row">
+                <text class="task-title {{item.completed ? 'title-completed' : ''}}">{{item.time}} - {{item.title}}</text>
+                <text wx:if="{{item.important && !item.completed}}" class="important-tag">重要</text>
+              </view>
               <view class="task-subtitle" wx:if="{{item.completed}}">
                 <text class="subtitle-success">做得很好💖</text>
                 <text class="subtitle-note"> • 已按时完成</text>
@@ -102,16 +102,13 @@
       </view>
 
       <!-- 温馨提醒 -->
-      <view class="remind-card">
+      <!-- <view class="remind-card">
         <view class="remind-info">
           <text class="remind-title">温馨提醒</text>
           <text class="remind-text">今天也要关心{{currentFamilyRelation || '家人'}}哦~</text>
         </view>
-        <view class="remind-action" bindtap="goToGreet">
-          <text>去问候</text>
-          <text class="material-icons">arrow_forward</text>
-        </view>
-      </view>
+      </view> -->
+      
     </view>
 
     <!-- 底部占位 -->

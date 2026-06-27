@@ -1,8 +1,18 @@
 const { DataManager } = require('../../utils/data-manager');
+const NotificationService = require('../../utils/notification-service');
 const app = getApp();
+
+function currentTimeValue() {
+  const now = new Date();
+  return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+}
 
 Page({
   data: {
+    pageTitle: '新建事项',
+    fromOnboarding: false,
+    isImportant: false,
+    presetSchedule: false,
     currentTarget: {
       id: null,
       name: '',
@@ -10,18 +20,26 @@ Page({
     },
     reminderTypes: [],
     selectedTypeIndex: 0,
-    selectedTime: '08:30',
+    selectedTime: currentTimeValue(),
     frequencyOptions: [
-      { id: 1, name: '每天', value: 'daily' },
-      { id: 2, name: '自定义', value: 'custom' }
+      { id: 1, name: '仅一次', value: 'custom' },
+      { id: 2, name: '每天重复', value: 'daily' }
     ],
     selectedFreqIndex: 0,
-    selectedDate: new Date().toISOString().split('T')[0], // 初始化为今天
-    remark: ''
+    selectedDate: DataManager.formatDate(new Date()),
+    remark: '',
+    isSubmitting: false
   },
 
   onLoad(options) {
     this.timers = [];
+    const presetSchedule = options.mode === 'schedule';
+    this.setData({
+      fromOnboarding: options.from === 'onboarding',
+      presetSchedule,
+      isImportant: presetSchedule,
+      selectedTime: currentTimeValue()
+    });
     this.loadCurrentFamily();
 
     if (options.familyId) {
@@ -79,8 +97,10 @@ Page({
   loadReminderTypes() {
     if (DataManager && typeof DataManager.getReminderTypes === 'function') {
       const types = DataManager.getReminderTypes();
+      const reviewIndex = types.findIndex(type => type.name === '复查');
       this.setData({
-        reminderTypes: types
+        reminderTypes: types,
+        selectedTypeIndex: this.data.presetSchedule && reviewIndex >= 0 ? reviewIndex : this.data.selectedTypeIndex
       });
     }
   },
@@ -134,6 +154,10 @@ Page({
     });
   },
 
+  onImportantChange(e) {
+    this.setData({ isImportant: e.detail.value });
+  },
+
   onRemarkInput(e) {
     this.setData({
       remark: e.detail.value
@@ -141,9 +165,14 @@ Page({
   },
 
   onSubmit() {
-    const { currentTarget, reminderTypes, selectedTypeIndex, selectedTime, frequencyOptions, selectedFreqIndex, remark } = this.data;
+    if (this.isSubmitting || this.data.isSubmitting) return;
+    this.isSubmitting = true;
+    this.setData({ isSubmitting: true });
+    const { currentTarget, reminderTypes, selectedTypeIndex, selectedTime, frequencyOptions, selectedFreqIndex, remark, isImportant } = this.data;
     
     if (!currentTarget.id) {
+      this.isSubmitting = false;
+      this.setData({ isSubmitting: false });
       wx.showToast({
         title: '请选择提醒对象',
         icon: 'none'
@@ -151,36 +180,75 @@ Page({
       return;
     }
 
+    const reminderType = { ...reminderTypes[selectedTypeIndex] };
+    delete reminderType.isKey;
+
     const reminderData = {
       id: Date.now(),
       familyId: currentTarget.id,
       targetName: currentTarget.name,
-      type: reminderTypes[selectedTypeIndex],
+      type: reminderType,
+      important: isImportant,
       time: selectedTime,
       frequency: frequencyOptions[selectedFreqIndex].value,
       date: frequencyOptions[selectedFreqIndex].value === 'custom' ? this.data.selectedDate : DataManager.formatDate(new Date()),
       remark: remark,
       completed: false,
+      category: 'item',
       createTime: new Date().toISOString()
     };
 
     const success = DataManager.addReminder(reminderData);
 
     if (success) {
-      wx.showToast({
-        title: '添加成功',
-        icon: 'success',
-        duration: 1500,
-        success: () => {
-          this.setTimeout(() => {
-            wx.navigateBack();
-          }, 1500);
+      const finishSave = () => this.showSaveSuccess();
+      NotificationService.requestReminderSubscription({ countAsPrompt: false }).then(result => {
+        if (result && result.accepted) {
+          NotificationService.markReminderSubscriptionGranted(reminderData);
         }
+        finishSave();
+      }, error => {
+        console.error('订阅消息授权记录失败', error);
+        finishSave();
       });
     } else {
+      this.isSubmitting = false;
+      this.setData({ isSubmitting: false });
       wx.showToast({
         title: '添加失败，请重试',
         icon: 'none'
+      });
+    }
+  },
+
+  showSaveSuccess() {
+    wx.showToast({
+      title: '事项已保存',
+      icon: 'success',
+      duration: 1500,
+      success: () => {
+        this.setTimeout(() => {
+          this.finishEditing();
+        }, 1500);
+      }
+    });
+  },
+
+  onBack() {
+    this.finishEditing();
+  },
+
+  finishEditing() {
+    if (this.isFinishing) return;
+    this.isFinishing = true;
+    if (this.data.fromOnboarding) {
+      wx.reLaunch({
+        url: '/pages/home/home',
+        fail: () => { this.isFinishing = false; }
+      });
+    } else {
+      wx.navigateBack({
+        fail: () => { this.isFinishing = false; }
       });
     }
   }

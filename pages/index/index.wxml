@@ -1,49 +1,50 @@
-<!--index.wxml-->
 <page-meta>
-  <navigation-bar id="navigationBar" title="首页" color="black" background="#FFF"></navigation-bar>
+  <navigation-bar title="家人照护记" color="black" background="#F7F8FA"></navigation-bar>
 </page-meta>
+
 <view class="page-container">
-  <!-- 顶部状态栏占位（适配小程序胶囊） -->
+  <view class="intro">
+    <view class="brand-mark">❤</view>
+    <text class="welcome-title">今天想先做什么？</text>
+    <text class="welcome-desc">先记下一件有用的事，家人资料稍后再完善</text>
+  </view>
 
-  <!-- 顶部导航栏 -->
-  <view class="header">
-    <view class="header-inner">
-      <text class="header-title">关爱家人小助手</text>
+  <view class="action-list">
+    <view
+      wx:for="{{actions}}"
+      wx:key="id"
+      class="action-card"
+      bindtap="onActionTap"
+      data-action="{{item.id}}"
+    >
+      <view class="action-icon {{item.tone}}">{{item.icon}}</view>
+      <view class="action-copy">
+        <text class="action-title">{{item.title}}</text>
+        <text class="action-desc">{{item.desc}}</text>
+      </view>
+      <text class="action-arrow">›</text>
     </view>
   </view>
 
-  <!-- 主内容区域 -->
-  <view class="main">
-    
-    <!-- 装饰性图形区域 -->
-    <view class="hero-section">
-      <view class="hero-bg-gradient"></view>
-      
-      <view class="hero-circle">
-        <view class="hero-shape-main"></view>
-        
-        <view class="hero-shape-yellow"></view>
-        <view class="hero-shape-blue"></view>
+  <text class="privacy-text">信息仅保存在当前设备</text>
+</view>
+
+<view class="picker-mask" wx:if="{{showRelationPicker}}" bindtap="closeRelationPicker">
+  <view class="picker-panel" catchtap="preventClose">
+    <view class="picker-handle"></view>
+    <text class="picker-title">这是为谁记录？</text>
+    <text class="picker-desc">点一下即可开始，姓名和年龄以后再填</text>
+    <view class="relation-grid">
+      <view
+        wx:for="{{relations}}"
+        wx:key="value"
+        class="relation-item"
+        bindtap="onRelationTap"
+        data-relation="{{item.value}}"
+      >
+        <image class="relation-avatar" src="{{item.avatar}}" mode="aspectFill"></image>
+        <text>{{item.label}}</text>
       </view>
     </view>
-
-    <!-- 欢迎文字区域 -->
-    <view class="welcome-section">
-      <text class="welcome-title">欢迎来到关爱家人小助手</text>
-      <view class="welcome-desc">
-        <text class="welcome-text">这里将陪伴您一起守护家人的每一天。</text>
-        <text class="welcome-text">您还没有添加护理对象，现在就开始记录并陪伴他们吧～</text>
-      </view>
-    </view>
-
-    <!-- 按钮区域 -->
-    <view class="button-section">
-      <button class="add-button" bindtap="onAddFamily">
-        <view class="button-icon"></view>
-        <text class="button-text">添加第一位家人</text>
-      </button>
-    </view>
-
   </view>
-
 </view>

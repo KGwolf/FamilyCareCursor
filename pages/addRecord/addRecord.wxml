@@ -1,4 +1,4 @@
-<navigation-bar title="记录健康状态" background="#ffffff" back="{{true}}" bindback="onBack"></navigation-bar>
+<navigation-bar title="记录健康状态" background="#ffffff" back="{{true}}" custom-back="{{true}}" bindback="onBack"></navigation-bar>
 
 <view class="add-record-page">
   <!-- Tab Navigation -->
@@ -63,6 +63,21 @@
             </view>
           </view>
         </view>
+
+        <view class="occurrence-card">
+          <view class="occurrence-copy">
+            <text class="occurrence-title">发生时间</text>
+            <text class="occurrence-desc">默认为现在，也可补记之前的情况</text>
+          </view>
+          <view class="occurrence-pickers">
+            <picker mode="date" value="{{occurrenceDate}}" bindchange="onOccurrenceDateChange">
+              <view class="occurrence-value">{{occurrenceDate}}</view>
+            </picker>
+            <picker mode="time" value="{{occurrenceTime}}" bindchange="onOccurrenceTimeChange">
+              <view class="occurrence-value">{{occurrenceTime}}</view>
+            </picker>
+          </view>
+        </view>
       </view>
 
       <!-- Notes Section -->
@@ -81,7 +96,7 @@
 
   <!-- Footer Action -->
   <view class="footer">
-    <button class="save-btn" bindtap="onSave">保存记录</button>
+    <button class="save-btn" bindtap="onSave">{{activeTab === 'weight' ? '保存体重' : '保存身体状态'}}</button>
     <view class="bottom-bar"></view>
   </view>
 </view>

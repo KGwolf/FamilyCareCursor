@@ -381,3 +381,49 @@ page {
   margin: 40rpx auto 0;
   border-radius: 100rpx;
 }
+
+.occurrence-card {
+  margin-top: 32rpx;
+  padding: 28rpx;
+  border: 2rpx solid #e7ebf0;
+  border-radius: 24rpx;
+  background: #fff;
+}
+
+.occurrence-title,
+.occurrence-desc {
+  display: block;
+}
+
+.occurrence-title {
+  color: #172033;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.occurrence-desc {
+  margin-top: 8rpx;
+  color: #8b95a7;
+  font-size: 22rpx;
+  line-height: 1.5;
+}
+
+.occurrence-pickers {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+
+.occurrence-pickers picker {
+  flex: 1;
+}
+
+.occurrence-value {
+  padding: 18rpx 16rpx;
+  border-radius: 16rpx;
+  background: #f4f7fb;
+  color: #2563eb;
+  font-size: 25rpx;
+  font-weight: 650;
+  text-align: center;
+}

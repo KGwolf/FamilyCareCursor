@@ -5,7 +5,6 @@ Page({
     typeList: [],
     showModal: false,
     newName: '',
-    newIsKey: false,
     selectedIcon: 'event_note',
     iconOptions: [
       'event_note', 'medication', 'event_available', 'notifications', 
@@ -41,7 +40,6 @@ Page({
     this.setData({
       showModal: true,
       newName: '',
-      newIsKey: false,
       selectedIcon: 'event_note'
     });
   },
@@ -58,12 +56,6 @@ Page({
     });
   },
 
-  onIsKeyChange(e) {
-    this.setData({
-      newIsKey: e.detail.value
-    });
-  },
-
   onSelectIcon(e) {
     this.setData({
       selectedIcon: e.currentTarget.dataset.icon
@@ -71,7 +63,7 @@ Page({
   },
 
   onAddConfirm() {
-    const { newName, newIsKey, selectedIcon } = this.data;
+    const { newName, selectedIcon } = this.data;
     
     if (!newName.trim()) {
       wx.showToast({
@@ -84,7 +76,6 @@ Page({
     if (DataManager && typeof DataManager.addReminderType === 'function') {
       const success = DataManager.addReminderType({
         name: newName.trim(),
-        isKey: newIsKey,
         icon: selectedIcon
       });
 

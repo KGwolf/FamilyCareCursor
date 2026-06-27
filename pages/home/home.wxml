@@ -1,115 +1,139 @@
 <view class="page-container">
-  <navigation-bar id="navigationBar" back="{{false}}" title="首页" color="black" background="#FFF"></navigation-bar>
-  
-  <scroll-view class="content-scroll" scroll-y type="list" show-scrollbar="{{false}}">
-    <!-- Header -->
+  <navigation-bar back="{{false}}" title="今天" color="black" background="#FFF"></navigation-bar>
+
+  <scroll-view class="content-scroll" scroll-y show-scrollbar="{{false}}">
     <view class="header">
       <view class="patient-selector" bindtap="onSwitchPatient">
         <image class="avatar" src="{{currentPatient.avatar}}" mode="aspectFill"></image>
         <view class="patient-info">
           <view class="patient-name-row">
             <text class="patient-name">{{currentPatient.name}}</text>
-            <text class="dropdown-arrow">▼</text>
+            <text class="material-icons dropdown-arrow">expand_more</text>
           </view>
-          <text class="switch-hint">点击切换家人</text>
         </view>
       </view>
-      <view class="add-member-btn" bindtap="onAddMember">
-        <text class="plus-icon">+</text>
+      <view class="header-actions">
+        <view class="header-action" bindtap="onAddMember" aria-role="button" aria-label="添加家人">
+          <text class="material-icons header-action-icon">person_add</text>
+        </view>
+        <view class="header-action" bindtap="onOpenSettings" aria-role="button" aria-label="设置">
+          <text class="material-icons header-action-icon">settings</text>
+        </view>
       </view>
-      <!-- <view class="notification-btn" bindtap="onNotification">🔔</view> -->
     </view>
 
-    <!-- Navigation Tabs -->
-    <!-- <view class="nav-tabs">
-      <view 
-        class="tab-item {{activeTab === 'today' ? 'tab-active' : ''}}" 
-        bindtap="onTabChange" 
-        data-tab="today"
-      >今日概览</view>
-      <view 
-        class="tab-item {{activeTab === 'trends' ? 'tab-active' : ''}}" 
-        bindtap="onTabChange" 
-        data-tab="trends"
-      >健康趋势</view>
-      <view 
-        class="tab-item {{activeTab === 'records' ? 'tab-active' : ''}}" 
-        bindtap="onTabChange" 
-        data-tab="records"
-      >病历管理</view>
-    </view> -->
-
-    <!-- Main Content -->
     <view class="main-content">
-      
-      <!-- Today's Tasks Header -->
-      <view class="tasks-header">
-        <view class="tasks-title-section">
-          <text class="tasks-title">今日任务</text>
-          <text class="tasks-date">{{todayDate}}</text>
-        </view>
-        <view class="tasks-progress-section">
-          <text class="progress-text">进度 {{completedTasks}}/{{totalTasks}}</text>
-          <view class="progress-bar">
-            <view class="progress-fill" style="width: {{progressPercent}}%"></view>
+      <view class="quick-section">
+        <text class="section-title-small">常用记录</text>
+        <view class="quick-grid">
+          <view class="quick-item quick-blue" bindtap="onQuickAction" data-action="item">
+            <view class="quick-icon-wrap"><text class="material-icons quick-icon">add_task</text></view>
+            <text>添加事项</text>
+          </view>
+          <view class="quick-item quick-orange" bindtap="onQuickAction" data-action="symptoms">
+            <view class="quick-icon-wrap"><text class="material-icons quick-icon">monitor_heart</text></view>
+            <text>身体状态</text>
+          </view>
+          <view class="quick-item quick-green" bindtap="onQuickAction" data-action="weight">
+            <view class="quick-icon-wrap"><text class="material-icons quick-icon">monitor_weight</text></view>
+            <text>体重</text>
           </view>
         </view>
-
       </view>
 
-      <!-- Task Cards -->
-      <view class="tasks-list">
-        <block wx:if="{{tasks.length > 0}}">
-          <!-- Completed Task -->
-          <block wx:for="{{tasks}}" wx:key="id">
-            <view class="task-card {{item.completed ? 'task-completed' : ''}} {{item.important ? 'task-important' : ''}}" bindtap="onTaskTap" data-id="{{item.id}}">
-              <!-- Important Badge -->
-              <view class="important-badge" wx:if="{{item.important && !item.completed}}">重点关注</view>
-              
-              <view class="task-icon-wrapper {{item.completed ? 'icon-completed' : ''}} {{item.iconBg}}">
-                <text class="task-icon material-icons">{{item.icon}}</text>
-              </view>
-              
-              <view class="task-content">
-                <text class="task-title {{item.completed ? 'title-completed' : ''}}">{{item.time}} - {{item.title}}</text>
-                <view class="task-subtitle" wx:if="{{item.completed}}">
-                  <text class="subtitle-success">做得很好💖</text>
-                  <text class="subtitle-note"> • 已按时完成</text>
+      <view class="tasks-section-v1">
+        <view class="tasks-header">
+          <view class="tasks-title-section">
+            <text class="tasks-title">今日事项</text>
+            <text class="tasks-date">完成 {{completedTasks}}/{{totalTasks}}</text>
+          </view>
+          <view class="progress-bar"><view class="progress-fill" style="width: {{progressPercent}}%"></view></view>
+        </view>
+
+        <view class="tasks-list">
+          <block wx:if="{{tasks.length > 0}}">
+            <block wx:for="{{tasks}}" wx:key="id">
+              <view wx:if="{{index < 3}}" class="task-card {{item.completed ? 'task-completed' : ''}} {{item.important ? 'task-important' : ''}}" bindtap="onTaskTap" data-id="{{item.id}}">
+                <view class="task-icon-wrapper {{item.completed ? 'icon-completed' : ''}} {{item.iconBg}}">
+                  <text class="task-icon material-icons">{{item.icon}}</text>
                 </view>
-                <text class="task-subtitle">{{item.location}}</text>
+                <view class="task-content">
+                  <view class="task-title-row">
+                    <text class="task-title {{item.completed ? 'title-completed' : ''}}">{{item.time}}  {{item.title}}</text>
+                    <text wx:if="{{item.important && !item.completed}}" class="important-tag">重要</text>
+                  </view>
+                  <text class="task-subtitle">{{item.completed ? '已完成' : (item.location || '点击标记完成')}}</text>
+                </view>
+                <view class="task-status {{item.completed ? 'status-completed' : 'status-pending'}}">
+                  <text wx:if="{{item.completed}}" class="check-icon">✓</text>
+                </view>
+                <view class="delete-btn" catchtap="onDeleteTask" data-id="{{item.id}}">×</view>
               </view>
-              
-              <view class="task-status {{item.completed ? 'status-completed' : 'status-pending'}}">
-                <text wx:if="{{item.completed}}" class="check-icon">✓</text>
-              </view>
-              
-              <view class="delete-btn" catchtap="onDeleteTask" data-id="{{item.id}}">
-                <text class="material-icons">delete_outline</text>
-              </view>
-            </view>
+            </block>
           </block>
-        </block>
-        <view wx:else class="empty-tasks">
-          <text class="empty-text">点击下方添加记录按钮添加提醒事项</text>
+          <view wx:else class="compact-empty">
+            <text>今天还没有事项</text>
+          </view>
+        </view>
+        <view wx:if="{{hiddenTasksCount > 0}}" class="more-tasks-wrap">
+          <view class="more-tasks" bindtap="onOpenCalendar">
+            <text>还有 {{hiddenTasksCount}} 项，查看全部</text>
+            <text class="more-arrow">›</text>
+          </view>
         </view>
       </view>
 
-      <!-- Motivational Card -->
-      <view class="motivation-card">
-        <view class="motivation-content">
-          <text class="motivation-title">照顾好自己 ❤️</text>
-          <text class="motivation-text">您是家人最强大的支柱，也请记得给自己留一点放松的时间 😊</text>
+      <view class="upcoming-section" wx:if="{{upcomingItems.length > 0}}">
+        <view class="section-heading-row">
+          <view class="upcoming-heading">
+            <view class="upcoming-heading-icon">日</view>
+            <view class="upcoming-heading-copy">
+              <text class="section-title-inline">接下来</text>
+              <text class="section-caption">未来事项</text>
+            </view>
+          </view>
+          <view class="calendar-link" bindtap="onOpenCalendar">查看日历 ›</view>
         </view>
-        <view class="motivation-btn" bindtap="onViewTips">查看心情贴士</view>
-        <view class="motivation-bg-circle"></view>
+        <view class="upcoming-list">
+          <view
+            wx:for="{{upcomingItems}}"
+            wx:key="id"
+            class="upcoming-item"
+            bindtap="onOpenCalendar"
+            data-date="{{item.date}}"
+          >
+            <view class="upcoming-date-card">
+              <text class="upcoming-day">{{item.dateLabel}}</text>
+              <text class="upcoming-time">{{item.time}}</text>
+            </view>
+            <view class="upcoming-copy">
+              <view class="upcoming-title-row">
+                <text class="material-icons upcoming-type-icon">{{item.icon}}</text>
+                <text class="upcoming-title">{{item.title}}</text>
+              </view>
+              <text class="upcoming-note" wx:if="{{item.remark}}">{{item.remark}}</text>
+            </view>
+            <text class="upcoming-arrow">›</text>
+          </view>
+        </view>
       </view>
 
+      <view class="recent-section">
+        <text class="section-title-small">最近变化</text>
+        <view wx:if="{{recentChanges.length > 0}}" class="recent-list">
+          <view wx:for="{{recentChanges}}" wx:key="id" class="recent-item">
+            <view class="recent-icon">{{item.icon}}</view>
+            <view class="recent-copy">
+              <text class="recent-title">{{item.title}}</text>
+              <text class="recent-time">{{item.time}}{{item.note ? ' · ' + item.note : ''}}</text>
+            </view>
+          </view>
+        </view>
+        <view wx:else class="compact-empty left-empty">记下第一条身体状态或体重，以后回顾会更清楚。</view>
+      </view>
     </view>
-    
-    <!-- Tabbar Spacer -->
+
     <view class="tabbar-spacer"></view>
   </scroll-view>
-
-  <!-- 底部导航 -->
   <tabbar activeTab="home" />
 </view>
